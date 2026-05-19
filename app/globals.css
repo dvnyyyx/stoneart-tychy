@@ -1,0 +1,391 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   STONEART — Global Styles
+   Brand: StoneArt Usługi Kamieniarsko-Liternicze, Tychy
+   ============================================================ */
+
+@layer base {
+  :root {
+    --color-bg:          #EDEAE3;
+    --color-bg-light:    #F4F1EB;
+    --color-bg-white:    #FAF8F4;
+    --color-dark:        #2D2D2D;
+    --color-darker:      #1A1A1A;
+    --color-text:        #1E1E1E;
+    --color-text-2:      #5A5A5A;
+    --color-text-3:      #8A8A8A;
+    --color-border:      #D8D4C8;
+    --color-border-light:#E8E4D8;
+    --color-gold:        #C4B87A;
+    --color-gold-dark:   #A89B58;
+    --color-gold-muted:  #E8E0C4;
+
+    --font-display:      var(--font-playfair), 'Playfair Display', Georgia, serif;
+    --font-body:         var(--font-inter), Inter, system-ui, sans-serif;
+    --font-quote:        var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+
+    --section-sm:        80px;
+    --section-md:        120px;
+    --section-lg:        160px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.75;
+    min-height: 100dvh;
+  }
+
+  /* Nagłówki — Playfair Display */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--color-text);
+  }
+
+  h1 { font-size: clamp(40px, 5.5vw, 72px); letter-spacing: -0.01em; }
+  h2 { font-size: clamp(28px, 3.5vw, 44px); }
+  h3 { font-size: clamp(20px, 2.5vw, 28px); }
+  h4 { font-size: clamp(18px, 2vw, 22px); }
+
+  p {
+    color: var(--color-text-2);
+    max-width: 65ch;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Focus styles — dostępność */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  /* Płynne znikanie loadera */
+  ::selection {
+    background: var(--color-gold-muted);
+    color: var(--color-text);
+  }
+}
+
+@layer components {
+  /* ==========================================
+     TYPOGRAFIA
+     ========================================== */
+
+  .font-display { font-family: var(--font-display); }
+  .font-quote   { font-family: var(--font-quote); }
+
+  /* ==========================================
+     SEKCJA — padding i max-width
+     ========================================== */
+
+  .section-padding {
+    @apply px-6 md:px-10 lg:px-16;
+    padding-top: var(--section-md);
+    padding-bottom: var(--section-md);
+  }
+
+  .section-padding-sm {
+    @apply px-6 md:px-10 lg:px-16;
+    padding-top: var(--section-sm);
+    padding-bottom: var(--section-sm);
+  }
+
+  .section-padding-lg {
+    @apply px-6 md:px-10 lg:px-16;
+    padding-top: var(--section-lg);
+    padding-bottom: var(--section-lg);
+  }
+
+  .container-stone {
+    @apply mx-auto w-full;
+    max-width: var(--container-width, 1280px);
+    padding-left: clamp(24px, 4vw, 80px);
+    padding-right: clamp(24px, 4vw, 80px);
+  }
+
+  .prose-stone {
+    max-width: 680px;
+  }
+
+  /* ==========================================
+     MOTYW PASKOWY — brand element z wizytówki
+     ========================================== */
+
+  .bar-motif {
+    @apply flex items-center gap-2;
+  }
+
+  .bar-motif__dark {
+    height: 3px;
+    width: 48px;
+    background: var(--color-text);
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+
+  .bar-motif__gold {
+    height: 3px;
+    width: 80px;
+    background: var(--color-gold);
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+
+  /* Wersja na ciemnym tle */
+  .bar-motif--light .bar-motif__dark {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* ==========================================
+     LABEL — mały uppercase tag
+     ========================================== */
+
+  .section-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-gold-dark);
+    margin-bottom: 16px;
+  }
+
+  .section-label--light {
+    color: var(--color-gold);
+  }
+
+  /* ==========================================
+     PRZYCISKI
+     ========================================== */
+
+  .btn {
+    @apply inline-flex items-center justify-center;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 44px;
+    padding: 12px 28px;
+  }
+
+  .btn-primary {
+    @apply btn;
+    background: var(--color-text);
+    color: var(--color-bg-white);
+    border: 1px solid var(--color-text);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-darker);
+    border-color: var(--color-darker);
+  }
+
+  .btn-gold {
+    @apply btn;
+    background: transparent;
+    color: var(--color-gold);
+    border: 1px solid var(--color-gold);
+  }
+
+  .btn-gold:hover {
+    background: var(--color-gold);
+    color: var(--color-darker);
+  }
+
+  .btn-ghost {
+    @apply btn;
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--color-text);
+  }
+
+  /* ==========================================
+     FORM ELEMENTS
+     ========================================== */
+
+  .form-field {
+    @apply w-full;
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 14px 16px;
+    transition: border-color 0.2s ease;
+    border-radius: 0;
+    appearance: none;
+  }
+
+  .form-field:focus {
+    outline: none;
+    border-color: var(--color-gold);
+  }
+
+  .form-field::placeholder {
+    color: var(--color-text-3);
+  }
+
+  .form-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-2);
+    margin-bottom: 8px;
+  }
+
+  .form-error {
+    font-size: 12px;
+    color: #B85C5C;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* ==========================================
+     KARTY
+     ========================================== */
+
+  .card-stone {
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  .card-stone:hover {
+    border-color: var(--color-gold);
+  }
+
+  .card-stone--dark {
+    background: var(--color-dark);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* ==========================================
+     DIVIDER
+     ========================================== */
+
+  .divider-stone {
+    width: 100%;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .divider-gold {
+    width: 48px;
+    height: 2px;
+    background: var(--color-gold);
+  }
+
+  /* ==========================================
+     LINK — elegancki underline
+     ========================================== */
+
+  .link-stone {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-gold-dark);
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    text-decoration-color: rgba(168, 155, 88, 0.4);
+    transition: text-decoration-color 0.2s ease;
+  }
+
+  .link-stone:hover {
+    text-decoration-color: var(--color-gold-dark);
+  }
+
+  /* ==========================================
+     ANIMACJE — Framer Motion helpers
+     ========================================== */
+
+  .will-animate {
+    will-change: transform, opacity;
+  }
+}
+
+@layer utilities {
+  /* Faktura kamienna — nakładana przez pseudo-element */
+  .stone-texture {
+    position: relative;
+  }
+
+  .stone-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stone-texture > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Tekst na ciemnym tle */
+  .text-on-dark {
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .text-on-dark-secondary {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .text-gold {
+    color: var(--color-gold);
+  }
+
+  .text-gold-dark {
+    color: var(--color-gold-dark);
+  }
+
+  /* Aspect ratios */
+  .aspect-stone  { aspect-ratio: 4 / 3; }
+  .aspect-portrait { aspect-ratio: 3 / 4; }
+  .aspect-hero   { aspect-ratio: 16 / 9; }
+
+  /* Scrollbar — subtelny */
+  ::-webkit-scrollbar        { width: 6px; }
+  ::-webkit-scrollbar-track  { background: var(--color-bg); }
+  ::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-gold); }
+}

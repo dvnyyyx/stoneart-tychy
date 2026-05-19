@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Duże pliki medialne — nie należą do repo
+public/images/prace/*.dng
+public/images/prace/*.mov
+public/images/prace/*.DNG
+public/images/prace/*.MOV
+public/images/prace/granit-impala
+
+# Next.js
+.next/
+out/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+.vercel
+*.tsbuildinfo
+next-env.d.ts
