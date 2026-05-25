@@ -238,7 +238,6 @@ export default config({
               description: 'Wgraj zdjęcie realizacji. Zalecane: JPG, min. 800×600px.',
               directory: 'public/images/prace',
               publicPath: '/images/prace/',
-              validation: { isRequired: true },
             }),
             alt: fields.text({
               label: 'Opis zdjęcia',
