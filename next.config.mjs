@@ -1,5 +1,3 @@
-import { withKeystatic } from '@keystatic/next'
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -26,4 +24,4 @@ const nextConfig = {
   },
 }
 
-export default withKeystatic(nextConfig)
+export default nextConfig
