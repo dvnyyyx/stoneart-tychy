@@ -1,85 +1,72 @@
 {
   "items": [
     {
-      "image": "/images/prace/IMG_0413/image.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "liternictwo",
       "featured": true
     },
     {
-      "image": "IMG_0593.jpeg",
+      "image": "/images/prace/items/1/image.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "liternictwo",
       "featured": true
     },
     {
-      "image": "IMG_0594.jpeg",
+      "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "renowacja",
       "featured": true
     },
     {
-      "image": "IMG_0596.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "renowacja",
       "featured": true
     },
     {
-      "image": "IMG_0658.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "liternictwo",
       "featured": true
     },
     {
-      "image": "IMG_3238.jpeg",
-      "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
-      "category": "liternictwo",
-      "featured": true
-    },
-    {
-      "image": "IMG_3239.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "renowacja",
       "featured": false
     },
     {
-      "image": "IMG_3240.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "montaz",
       "featured": false
     },
     {
-      "image": "IMG_3241.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "liternictwo",
       "featured": false
     },
     {
-      "image": "IMG_3242.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "renowacja",
       "featured": false
     },
     {
-      "image": "IMG_3361.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "liternictwo",
       "featured": false
     },
     {
-      "image": "IMG_3363.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "renowacja",
       "featured": false
     },
     {
-      "image": "IMG_3364.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "liternictwo",
       "featured": false
     },
     {
-      "image": "IMG_3365.jpeg",
       "alt": "Prace kamieniarsko-liternicze StoneArt — Tychy",
       "category": "montaz",
       "featured": false
