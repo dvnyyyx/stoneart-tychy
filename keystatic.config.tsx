@@ -12,8 +12,10 @@ export default config({
   ui: {
     brand: { name: 'StoneArt CMS' },
     navigation: {
-      Treść: ['testimonials'],
-      Ustawienia: ['siteSettings', 'homepage'],
+      Opinie: ['testimonials'],
+      'Strona główna': ['hero', 'homepage'],
+      Usługi: ['services'],
+      Firma: ['siteSettings'],
     },
   },
 
@@ -23,10 +25,12 @@ export default config({
       slugField: 'author',
       path: 'content/testimonials/*',
       format: { data: 'json' },
+      previewUrl: '/opinie',
       schema: {
         author: fields.slug({
           name: {
-            label: 'Imię i inicjał (np. Anna K.)',
+            label: 'Imię i nazwisko / inicjał',
+            description: 'np. Anna K. albo Marek Wiśniewski',
             validation: { isRequired: true },
           },
         }),
@@ -34,28 +38,186 @@ export default config({
           label: 'Miasto',
           validation: { isRequired: true },
         }),
+        rating: fields.integer({
+          label: 'Ocena (1–5 gwiazdek)',
+          defaultValue: 5,
+          validation: { isRequired: true, min: 1, max: 5 },
+        }),
+        source: fields.select({
+          label: 'Źródło opinii',
+          defaultValue: 'google',
+          options: [
+            { label: 'Google', value: 'google' },
+            { label: 'Bezpośrednio', value: 'direct' },
+            { label: 'Polecenie', value: 'referral' },
+          ],
+        }),
         quote: fields.text({
           label: 'Treść opinii',
           multiline: true,
           validation: { isRequired: true },
+        }),
+        featured: fields.checkbox({
+          label: 'Wyróżniona (pokazuj na stronie głównej)',
+          defaultValue: true,
+        }),
+      },
+    }),
+
+    services: collection({
+      label: 'Usługi',
+      slugField: 'title',
+      path: 'content/services/*',
+      format: { data: 'json' },
+      previewUrl: '/uslugi',
+      schema: {
+        title: fields.slug({
+          name: {
+            label: 'Nazwa usługi',
+            validation: { isRequired: true },
+          },
+        }),
+        shortTitle: fields.text({
+          label: 'Krótka nazwa (w menu, kartach)',
+          validation: { isRequired: true },
+        }),
+        category: fields.text({
+          label: 'Kategoria',
+          description: 'np. Główna specjalizacja / Renowacja / Usługi dodatkowe',
+        }),
+        description: fields.text({
+          label: 'Opis usługi',
+          multiline: true,
+          validation: { isRequired: true },
+        }),
+        features: fields.array(
+          fields.text({ label: 'Punkt' }),
+          {
+            label: 'Lista cech / zakresu prac',
+            itemLabel: (props) => props.value || 'Punkt',
+          }
+        ),
+        featured: fields.checkbox({
+          label: 'Główna usługa (wyróżniona na stronie głównej)',
+          defaultValue: false,
+        }),
+        order: fields.integer({
+          label: 'Kolejność wyświetlania (1 = pierwsza)',
+          defaultValue: 1,
         }),
       },
     }),
   },
 
   singletons: {
+    hero: singleton({
+      label: 'Strona główna — Hero (nagłówek)',
+      path: 'content/settings/hero',
+      format: { data: 'json' },
+      previewUrl: '/',
+      schema: {
+        label: fields.text({
+          label: 'Etykieta nad tytułem',
+          description: 'Małe litery nad głównym nagłówkiem',
+          defaultValue: 'Pracownia rzemieślnicza — Tychy, Śląskie',
+        }),
+        titleLine1: fields.text({
+          label: 'Tytuł — linia 1',
+          defaultValue: 'Usługi',
+          validation: { isRequired: true },
+        }),
+        titleLine2: fields.text({
+          label: 'Tytuł — linia 2',
+          defaultValue: 'kamieniarsko-',
+          validation: { isRequired: true },
+        }),
+        titleLine3: fields.text({
+          label: 'Tytuł — linia 3 (kursywa, przyciemniona)',
+          defaultValue: 'liternicze.',
+          validation: { isRequired: true },
+        }),
+        description: fields.text({
+          label: 'Opis pod tytułem',
+          multiline: true,
+          defaultValue: 'Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Tychy i okolice — do wyceny wystarczą zdjęcia.',
+          validation: { isRequired: true },
+        }),
+        ctaPrimary: fields.text({
+          label: 'Przycisk główny',
+          defaultValue: 'Zapytaj o wycenę',
+          validation: { isRequired: true },
+        }),
+      },
+    }),
+
+    homepage: singleton({
+      label: 'Strona główna — sekcje',
+      path: 'content/settings/homepage',
+      format: { data: 'json' },
+      previewUrl: '/',
+      schema: {
+        aboutLabel: fields.text({
+          label: 'Sekcja "O pracowni" — etykieta',
+          defaultValue: 'O pracowni',
+        }),
+        aboutTitle: fields.text({
+          label: 'Sekcja "O pracowni" — tytuł',
+          defaultValue: 'Precyzja i dbałość o szczegóły.',
+          validation: { isRequired: true },
+        }),
+        aboutText1: fields.text({
+          label: 'Sekcja "O pracowni" — akapit 1',
+          multiline: true,
+          defaultValue: 'Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Działamy na terenie Tychów i okolicznych miejscowości, wykonując usługi zarówno dla klientów indywidualnych, jak i zakładów kamieniarskich.',
+          validation: { isRequired: true },
+        }),
+        aboutText2: fields.text({
+          label: 'Sekcja "O pracowni" — akapit 2',
+          multiline: true,
+          defaultValue: 'Rozumiemy, że nagrobek jest miejscem pamięci bliskich osób. Do każdego zlecenia podchodzimy z należytą starannością i szacunkiem.',
+          validation: { isRequired: true },
+        }),
+        qualityLabel: fields.text({
+          label: 'Sekcja "Jak pracujemy" — etykieta',
+          defaultValue: 'Jak pracujemy',
+        }),
+        qualityTitle: fields.text({
+          label: 'Sekcja "Jak pracujemy" — tytuł',
+          defaultValue: 'Solidnie, estetycznie, trwale.',
+          validation: { isRequired: true },
+        }),
+        qualityText1: fields.text({
+          label: 'Sekcja "Jak pracujemy" — akapit 1',
+          multiline: true,
+          defaultValue: 'Każde zlecenie realizujemy indywidualnie, zwracając uwagę na estetykę, trwałość i dokładność wykonania. Pracujemy na różnych rodzajach kamienia naturalnego, dobierając odpowiednią technikę do każdego przypadku.',
+          validation: { isRequired: true },
+        }),
+        qualityText2: fields.text({
+          label: 'Sekcja "Jak pracujemy" — akapit 2',
+          multiline: true,
+          defaultValue: 'W wielu przypadkach do wstępnej wyceny wystarczą zdjęcia przesłane telefonicznie. Napisz lub zadzwoń — bezpośredni kontakt na każdym etapie zlecenia, wycena bezpłatna.',
+          validation: { isRequired: true },
+        }),
+        testimonialsTitle: fields.text({
+          label: 'Sekcja opinii — tytuł',
+          defaultValue: 'Co mówią nasi klienci.',
+          validation: { isRequired: true },
+        }),
+      },
+    }),
+
     siteSettings: singleton({
-      label: 'Dane firmy',
+      label: 'Dane firmy i kontakt',
       path: 'content/settings/site',
       format: { data: 'json' },
       schema: {
         phone: fields.text({
           label: 'Telefon',
-          description: 'Wyświetlany na stronie i w stopce',
+          description: 'Wyświetlany na stronie, w stopce i w nagłówku',
           validation: { isRequired: true },
         }),
         email: fields.text({
-          label: 'Email',
+          label: 'Email kontaktowy',
           validation: { isRequired: true },
         }),
         address: fields.text({
@@ -63,62 +225,27 @@ export default config({
           description: 'np. Różana 41, Tychy',
           validation: { isRequired: true },
         }),
+        postcode: fields.text({
+          label: 'Kod pocztowy',
+          defaultValue: '43-100',
+        }),
+        city: fields.text({
+          label: 'Miasto',
+          defaultValue: 'Tychy',
+        }),
         hours: fields.text({
           label: 'Godziny pracy',
           description: 'np. Pon.–Pt. 9:00–17:00',
           validation: { isRequired: true },
         }),
-      },
-    }),
-
-    homepage: singleton({
-      label: 'Strona główna — teksty',
-      path: 'content/settings/homepage',
-      format: { data: 'json' },
-      schema: {
-        heroTitle: fields.text({
-          label: 'Hero — tytuł (linia 1)',
-          description: 'Duży nagłówek na górze strony',
-          validation: { isRequired: true },
+        serviceArea: fields.text({
+          label: 'Obszar obsługi',
+          description: 'Wyświetlany w stopce i na stronie kontaktowej',
+          defaultValue: 'Tychy, Katowice, Mysłowice, Bieruń, Lędziny i okolice',
         }),
-        heroSubtitle: fields.text({
-          label: 'Hero — tytuł (linia 2)',
-          validation: { isRequired: true },
-        }),
-        heroDescription: fields.text({
-          label: 'Hero — opis pod tytułem',
-          multiline: true,
-          validation: { isRequired: true },
-        }),
-        ctaPrimary: fields.text({
-          label: 'Przycisk główny — tekst',
-          validation: { isRequired: true },
-        }),
-        ctaSecondary: fields.text({
-          label: 'Przycisk drugorzędny — tekst',
-          validation: { isRequired: true },
-        }),
-        aboutTitle: fields.text({
-          label: 'Sekcja "O nas" — tytuł',
-          validation: { isRequired: true },
-        }),
-        aboutText: fields.text({
-          label: 'Sekcja "O nas" — tekst',
-          multiline: true,
-          validation: { isRequired: true },
-        }),
-        testimonialsTitle: fields.text({
-          label: 'Sekcja opinii — tytuł',
-          validation: { isRequired: true },
-        }),
-        ctaTitle: fields.text({
-          label: 'Sekcja CTA — tytuł',
-          validation: { isRequired: true },
-        }),
-        ctaText: fields.text({
-          label: 'Sekcja CTA — opis',
-          multiline: true,
-          validation: { isRequired: true },
+        googleMapsUrl: fields.url({
+          label: 'Link do Google Maps',
+          description: 'Link do lokalizacji firmy na Google Maps',
         }),
       },
     }),

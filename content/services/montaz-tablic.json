@@ -1,0 +1,15 @@
+{
+  "title": "Montaż i demontaż tablic",
+  "shortTitle": "Montaż",
+  "category": "Usługi dodatkowe",
+  "description": "Montaż i demontaż tablic nagrobnych, wymiana uszkodzonych elementów oraz przygotowanie nagrobka do kolejnych prac. Wykonujemy usługi zarówno dla klientów indywidualnych, jak i zakładów kamieniarskich.",
+  "features": [
+    "Montaż nowych tablic nagrobnych",
+    "Demontaż i wymiana uszkodzonych tablic",
+    "Przygotowanie nagrobka do nowych inskrypcji",
+    "Obramowania grobów",
+    "Ławki i elementy ozdobne"
+  ],
+  "featured": false,
+  "order": 3
+}

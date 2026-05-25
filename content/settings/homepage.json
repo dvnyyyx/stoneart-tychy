@@ -1,12 +1,11 @@
 {
-  "heroTitle": "Usługi kamieniarsko-",
-  "heroSubtitle": "liternicze.",
-  "heroDescription": "Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Tychy i okolice — do wyceny wystarczą zdjęcia.",
-  "ctaPrimary": "Zapytaj o wycenę",
-  "ctaSecondary": "Zadzwoń",
+  "aboutLabel": "O pracowni",
   "aboutTitle": "Precyzja i dbałość o szczegóły.",
-  "aboutText": "Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Działamy na terenie Tychów i okolicznych miejscowości, wykonując usługi zarówno dla klientów indywidualnych, jak i zakładów kamieniarskich.\n\nRozumiemy, że nagrobek jest miejscem pamięci bliskich osób. Do każdego zlecenia podchodzimy z należytą starannością i szacunkiem.",
-  "testimonialsTitle": "Opinie klientów",
-  "ctaTitle": "Bezpłatna wycena",
-  "ctaText": "W wielu przypadkach do wstępnej wyceny wystarczą zdjęcia przesłane telefonicznie. Napisz lub zadzwoń — bezpośredni kontakt na każdym etapie zlecenia."
+  "aboutText1": "Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Działamy na terenie Tychów i okolicznych miejscowości, wykonując usługi zarówno dla klientów indywidualnych, jak i zakładów kamieniarskich.",
+  "aboutText2": "Rozumiemy, że nagrobek jest miejscem pamięci bliskich osób. Do każdego zlecenia podchodzimy z należytą starannością i szacunkiem.",
+  "qualityLabel": "Jak pracujemy",
+  "qualityTitle": "Solidnie, estetycznie, trwale.",
+  "qualityText1": "Każde zlecenie realizujemy indywidualnie, zwracając uwagę na estetykę, trwałość i dokładność wykonania. Pracujemy na różnych rodzajach kamienia naturalnego, dobierając odpowiednią technikę do każdego przypadku.",
+  "qualityText2": "W wielu przypadkach do wstępnej wyceny wystarczą zdjęcia przesłane telefonicznie. Napisz lub zadzwoń — bezpośredni kontakt na każdym etapie zlecenia, wycena bezpłatna.",
+  "testimonialsTitle": "Co mówią nasi klienci."
 }
