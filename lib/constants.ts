@@ -11,7 +11,7 @@ export const SITE = {
   region:      'Śląskie',
   postcode:    '43-100',
   country:     'PL',
-  url:         'https://stoneart.tychy.pl',
+  url:         'https://www.stoneart-tychy.pl',
   description: 'Liternictwo nagrobne, piaskowanie napisów i renowacja nagrobków w Tychach. Wykonujemy dopiski liter i dat, nowe napisy oraz odnawiamy tablice granitowe. Klienci indywidualni i zakłady kamieniarskie.',
   hours:       'Pon.–Pt. 9:00–17:00',
 } as const
