@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { SITE } from '@/lib/constants'
 import { PHOTOS, photoSrc } from '@/lib/photos'
-import { getHomepageContent } from '@/lib/content'
+import { getHomepageContent, resolveImage } from '@/lib/content'
 import { Hero }                from '@/components/sections/Hero'
 import { EditorialSection }    from '@/components/sections/EditorialSection'
 import { ServiceGrid }         from '@/components/sections/ServiceGrid'
@@ -23,10 +23,10 @@ export default async function HomePage() {
   try {
     const cms = await getHomepageContent()
     editorial1 = cms?.editorialImage1
-      ? { src: cms.editorialImage1, alt: 'StoneArt — pracownia kamieniarsko-liternicza' }
+      ? { src: resolveImage(cms.editorialImage1), alt: 'StoneArt — pracownia kamieniarsko-liternicza' }
       : PHOTOS[2] ? { src: photoSrc(PHOTOS[2].file), alt: PHOTOS[2].alt } : undefined
     editorial2 = cms?.editorialImage2
-      ? { src: cms.editorialImage2, alt: 'StoneArt — jakość i precyzja wykonania' }
+      ? { src: resolveImage(cms.editorialImage2), alt: 'StoneArt — jakość i precyzja wykonania' }
       : PHOTOS[3] ? { src: photoSrc(PHOTOS[3].file), alt: PHOTOS[3].alt } : undefined
   } catch {
     editorial1 = PHOTOS[2] ? { src: photoSrc(PHOTOS[2].file), alt: PHOTOS[2].alt } : undefined

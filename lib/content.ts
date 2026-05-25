@@ -4,6 +4,14 @@ import keystaticConfig from '../keystatic.config'
 // Keystatic reader — używany w Server Components (SSG/SSR)
 export const reader = createReader(process.cwd(), keystaticConfig)
 
+// fields.image() zwraca samą nazwę pliku bez ścieżki.
+// publicPath działa tylko w UI edytora, nie w reader API.
+export function resolveImage(value: string | null | undefined, publicPath = '/images/prace/'): string {
+  if (!value) return ''
+  if (value.startsWith('/') || value.startsWith('http')) return value
+  return publicPath + value
+}
+
 // Helper: opinie klientów
 export async function getTestimonials() {
   const slugs = await reader.collections.testimonials.list()

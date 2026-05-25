@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { SITE } from '@/lib/constants'
 import { HERO_PHOTO, photoSrc } from '@/lib/photos'
-import { getHeroContent } from '@/lib/content'
+import { getHeroContent, resolveImage } from '@/lib/content'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 
 export async function Hero() {
@@ -11,7 +11,7 @@ export async function Hero() {
   try {
     const cms = await getHeroContent()
     if (cms?.heroImage) {
-      heroImageSrc = cms.heroImage
+      heroImageSrc = resolveImage(cms.heroImage)
     }
   } catch {
     // fallback poniżej

@@ -1,4 +1,4 @@
-import { getFeaturedGallery } from '@/lib/content'
+import { getFeaturedGallery, resolveImage } from '@/lib/content'
 import { homepagePhotos, photoSrc } from '@/lib/photos'
 import { RealizationGalleryClient } from '@/components/sections/RealizationGalleryClient'
 
@@ -9,7 +9,7 @@ export async function RealizationGallery() {
     const fromCMS = await getFeaturedGallery()
     if (fromCMS.length > 0) {
       photos = fromCMS.map((p) => ({
-        src: p.image ?? '',
+        src: resolveImage(p.image),
         alt: p.alt,
         category: p.category ?? undefined,
       }))

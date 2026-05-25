@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { SITE } from '@/lib/constants'
 import { PHOTOS, photoSrc } from '@/lib/photos'
-import { getGallery } from '@/lib/content'
+import { getGallery, resolveImage } from '@/lib/content'
 import { BreadcrumbSchema } from '@/lib/schema'
 import { RealizacjeClient } from '@/components/sections/RealizacjeClient'
 
@@ -17,7 +17,7 @@ export default async function RealizacjePage() {
     const fromCMS = await getGallery()
     if (fromCMS.length > 0) {
       photos = fromCMS.map((p) => ({
-        src: p.image ?? '',
+        src: resolveImage(p.image),
         alt: p.alt,
         category: p.category ?? undefined,
       }))
