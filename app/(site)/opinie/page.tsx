@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SITE, TESTIMONIALS } from '@/lib/constants'
+import { getTestimonials } from '@/lib/content'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { BreadcrumbSchema } from '@/lib/schema'
@@ -12,7 +13,17 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/opinie` },
 }
 
-export default function OpiniePage() {
+export default async function OpiniePage() {
+  let testimonials: { author: string; location: string; quote: string }[]
+  try {
+    const fromCMS = await getTestimonials()
+    testimonials = fromCMS.length > 0
+      ? fromCMS
+      : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+  } catch {
+    testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+  }
+
   return (
     <>
       <BreadcrumbSchema items={[{ name: 'Opinie', href: '/opinie' }]} />
@@ -28,8 +39,8 @@ export default function OpiniePage() {
       <section className="bg-stone-dark stone-texture py-section-md">
         <div className="container-stone">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-            {TESTIMONIALS.map((t, i) => (
-              <AnimatedReveal key={t.id} delay={i * 80}>
+            {testimonials.map((t, i) => (
+              <AnimatedReveal key={t.author} delay={i * 80}>
                 <TestimonialCard
                   quote={t.quote}
                   author={t.author}

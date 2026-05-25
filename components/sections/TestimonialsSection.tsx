@@ -1,12 +1,24 @@
 import Link from 'next/link'
+import { getTestimonials } from '@/lib/content'
 import { TESTIMONIALS } from '@/lib/constants'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
-export function TestimonialsSection() {
+export async function TestimonialsSection() {
+  // Próbuj wczytać opinie z Keystatic; fallback na constants.ts
+  let testimonials: { author: string; location: string; quote: string }[]
+  try {
+    const fromCMS = await getTestimonials()
+    testimonials = fromCMS.length > 0
+      ? fromCMS
+      : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+  } catch {
+    testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+  }
+
   // Na homepage pokazujemy 3 opinie
-  const displayed = TESTIMONIALS.slice(0, 3)
+  const displayed = testimonials.slice(0, 3)
 
   return (
     <section className="bg-stone-dark stone-texture py-section-md overflow-hidden">
@@ -29,7 +41,7 @@ export function TestimonialsSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
           {displayed.map((t, i) => (
-            <AnimatedReveal key={t.id} delay={i * 100}>
+            <AnimatedReveal key={t.author} delay={i * 100}>
               <TestimonialCard
                 quote={t.quote}
                 author={t.author}
