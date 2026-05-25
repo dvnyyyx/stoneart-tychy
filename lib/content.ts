@@ -27,10 +27,31 @@ export async function getFeaturedTestimonials() {
   return all.filter((t) => t.featured).slice(0, 3)
 }
 
-// Helper: galeria — kolejność z tablicy (drag-and-drop w CMS)
+// Helper: galeria — kolejność z galleryOrder singletonem (drag-and-drop)
 export async function getGallery() {
-  const data = await reader.singletons.galleryData.read()
-  return data?.items ?? []
+  const slugs = await reader.collections.gallery.list()
+  const itemsRaw = await Promise.all(
+    slugs.map(async (slug) => {
+      const item = await reader.collections.gallery.read(slug)
+      return item ? { ...item, slug } : null
+    })
+  )
+  const items = itemsRaw.filter(Boolean) as (NonNullable<typeof itemsRaw[number]>)[]
+
+  // Sortuj wg kolejności z singletonem; nowe zdjęcia (bez wpisu) idą na koniec
+  const orderData = await reader.singletons.galleryOrder.read()
+  const order = orderData?.order ?? []
+  if (order.length > 0) {
+    return items.sort((a, b) => {
+      const ai = order.indexOf(a.slug)
+      const bi = order.indexOf(b.slug)
+      if (ai === -1 && bi === -1) return 0
+      if (ai === -1) return 1
+      if (bi === -1) return -1
+      return ai - bi
+    })
+  }
+  return items
 }
 
 // Helper: tylko zdjęcia wyróżnione (strona główna)

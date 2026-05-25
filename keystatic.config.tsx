@@ -12,7 +12,7 @@ export default config({
   ui: {
     brand: { name: 'StoneArt CMS' },
     navigation: {
-      Galeria: ['galleryData'],
+      Galeria: ['gallery', 'galleryOrder'],
       Opinie: ['testimonials'],
       'Strona główna': ['hero', 'homepage'],
       Usługi: ['services'],
@@ -21,6 +21,45 @@ export default config({
   },
 
   collections: {
+    gallery: collection({
+      label: 'Zdjęcia — dodaj / edytuj / usuń',
+      slugField: 'alt',
+      path: 'content/gallery/*',
+      format: { data: 'json' },
+      previewUrl: '/realizacje',
+      schema: {
+        image: fields.image({
+          label: 'Zdjęcie',
+          description: 'Wgraj zdjęcie realizacji. Zalecane: JPG, min. 800×600px.',
+          directory: 'public/images/prace',
+          publicPath: '/images/prace/',
+          validation: { isRequired: true },
+        }),
+        alt: fields.slug({
+          name: {
+            label: 'Opis zdjęcia (alt / slug)',
+            description: 'Krótki opis co jest na zdjęciu — ważne dla SEO. Staje się też identyfikatorem zdjęcia.',
+            validation: { isRequired: true },
+          },
+        }),
+        category: fields.select({
+          label: 'Kategoria',
+          defaultValue: 'liternictwo',
+          options: [
+            { label: 'Liternictwo i dopiski', value: 'liternictwo' },
+            { label: 'Renowacja nagrobków', value: 'renowacja' },
+            { label: 'Montaż tablic', value: 'montaz' },
+            { label: 'Inne', value: 'inne' },
+          ],
+        }),
+        featured: fields.checkbox({
+          label: 'Pokazuj na stronie głównej',
+          description: 'Zaznacz, żeby zdjęcie pojawiło się w galerii na stronie głównej.',
+          defaultValue: false,
+        }),
+      },
+    }),
+
     testimonials: collection({
       label: 'Opinie klientów',
       slugField: 'author',
@@ -225,46 +264,20 @@ export default config({
       },
     }),
 
-    galleryData: singleton({
-      label: 'Galeria realizacji',
-      path: 'content/settings/gallery',
+    galleryOrder: singleton({
+      label: 'Kolejność zdjęć — przeciągnij żeby zmienić',
+      path: 'content/settings/gallery-order',
       format: { data: 'json' },
       previewUrl: '/realizacje',
       schema: {
-        items: fields.array(
-          fields.object({
-            image: fields.image({
-              label: 'Zdjęcie',
-              description: 'Wgraj zdjęcie realizacji. Zalecane: JPG, min. 800×600px.',
-              directory: 'public/images/prace',
-              publicPath: '/images/prace/',
-            }),
-            alt: fields.text({
-              label: 'Opis zdjęcia',
-              description: 'Krótki opis co jest na zdjęciu — ważne dla SEO i dostępności',
-              defaultValue: 'Prace kamieniarsko-liternicze StoneArt — Tychy',
-              validation: { isRequired: true },
-            }),
-            category: fields.select({
-              label: 'Kategoria',
-              defaultValue: 'liternictwo',
-              options: [
-                { label: 'Liternictwo i dopiski', value: 'liternictwo' },
-                { label: 'Renowacja nagrobków', value: 'renowacja' },
-                { label: 'Montaż tablic', value: 'montaz' },
-                { label: 'Inne', value: 'inne' },
-              ],
-            }),
-            featured: fields.checkbox({
-              label: 'Pokazuj na stronie głównej',
-              description: 'Zaznacz, żeby zdjęcie pojawiło się w galerii na stronie głównej (max. 6 zdjęć)',
-              defaultValue: false,
-            }),
+        order: fields.array(
+          fields.text({
+            label: 'Slug zdjęcia',
           }),
           {
-            label: 'Zdjęcia w galerii',
-            description: 'Przeciągnij zdjęcia, aby zmienić kolejność. Kolejność na liście = kolejność wyświetlania na stronie.',
-            itemLabel: (props) => props.fields.alt.value || 'Zdjęcie',
+            label: 'Kolejność wyświetlania',
+            description: 'Przeciągnij wpisy żeby zmienić kolejność. Każdy wpis to slug zdjęcia (widoczny w adresie URL kiedy edytujesz zdjęcie w sekcji "Zdjęcia").',
+            itemLabel: (props) => props.value || '—',
           }
         ),
       },
