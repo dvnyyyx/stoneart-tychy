@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { SITE } from '@/lib/constants'
 import { PHOTOS, photoSrc } from '@/lib/photos'
+import { getHomepageContent } from '@/lib/content'
 import { Hero }                from '@/components/sections/Hero'
 import { EditorialSection }    from '@/components/sections/EditorialSection'
 import { ServiceGrid }         from '@/components/sections/ServiceGrid'
@@ -15,19 +16,28 @@ export const metadata: Metadata = {
   alternates: { canonical: SITE.url },
 }
 
-export default function HomePage() {
-  const editorial1 = PHOTOS[2] ? { src: photoSrc(PHOTOS[2].file), alt: PHOTOS[2].alt } : undefined
-  const editorial2 = PHOTOS[3] ? { src: photoSrc(PHOTOS[3].file), alt: PHOTOS[3].alt } : undefined
+export default async function HomePage() {
+  // Zdjęcia edytorialne z Keystatic (fallback na photos.ts)
+  let editorial1: { src: string; alt: string } | undefined
+  let editorial2: { src: string; alt: string } | undefined
+  try {
+    const cms = await getHomepageContent()
+    editorial1 = cms?.editorialImage1
+      ? { src: cms.editorialImage1, alt: 'StoneArt — pracownia kamieniarsko-liternicza' }
+      : PHOTOS[2] ? { src: photoSrc(PHOTOS[2].file), alt: PHOTOS[2].alt } : undefined
+    editorial2 = cms?.editorialImage2
+      ? { src: cms.editorialImage2, alt: 'StoneArt — jakość i precyzja wykonania' }
+      : PHOTOS[3] ? { src: photoSrc(PHOTOS[3].file), alt: PHOTOS[3].alt } : undefined
+  } catch {
+    editorial1 = PHOTOS[2] ? { src: photoSrc(PHOTOS[2].file), alt: PHOTOS[2].alt } : undefined
+    editorial2 = PHOTOS[3] ? { src: photoSrc(PHOTOS[3].file), alt: PHOTOS[3].alt } : undefined
+  }
 
   return (
     <>
-      {/* Schema.org LocalBusiness */}
       <LocalBusinessSchema />
-
-      {/* 1. Hero — pełny ekran, dark */}
       <Hero />
 
-      {/* 2. Editorial intro — o pracowni */}
       <EditorialSection
         label="O pracowni"
         title="Precyzja i dbałość o szczegóły."
@@ -53,13 +63,9 @@ export default function HomePage() {
         background="light"
       />
 
-      {/* 3. Grid usług */}
       <ServiceGrid />
-
-      {/* 4. Galeria realizacji */}
       <RealizationGallery />
 
-      {/* 5. Drugi blok editorial — proces i jakość */}
       <EditorialSection
         label="Jak pracujemy"
         title="Solidnie, estetycznie, trwale."
@@ -86,10 +92,7 @@ export default function HomePage() {
         background="default"
       />
 
-      {/* 6. Opinie */}
       <TestimonialsSection />
-
-      {/* 7. Formularz wyceny */}
       <QuoteSection />
     </>
   )

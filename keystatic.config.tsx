@@ -189,6 +189,12 @@ export default config({
           defaultValue: 'Zapytaj o wycenę',
           validation: { isRequired: true },
         }),
+        heroImage: fields.image({
+          label: 'Zdjęcie tła hero',
+          description: 'Duże zdjęcie w tle na stronie głównej. Najlepiej poziome, min. 1920×1080px.',
+          directory: 'public/images/prace',
+          publicPath: '/images/prace/',
+        }),
       },
     }),
 
@@ -244,6 +250,18 @@ export default config({
           label: 'Sekcja opinii — tytuł',
           defaultValue: 'Co mówią nasi klienci.',
           validation: { isRequired: true },
+        }),
+        editorialImage1: fields.image({
+          label: 'Zdjęcie przy sekcji "O pracowni"',
+          description: 'Zdjęcie po lewej stronie tekstu "Precyzja i dbałość o szczegóły".',
+          directory: 'public/images/prace',
+          publicPath: '/images/prace/',
+        }),
+        editorialImage2: fields.image({
+          label: 'Zdjęcie przy sekcji "Jak pracujemy"',
+          description: 'Zdjęcie po prawej stronie tekstu "Solidnie, estetycznie, trwale".',
+          directory: 'public/images/prace',
+          publicPath: '/images/prace/',
         }),
       },
     }),
