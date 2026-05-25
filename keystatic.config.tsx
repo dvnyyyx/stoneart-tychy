@@ -12,7 +12,7 @@ export default config({
   ui: {
     brand: { name: 'StoneArt CMS' },
     navigation: {
-      Galeria: ['gallery'],
+      Galeria: ['galleryData'],
       Opinie: ['testimonials'],
       'Strona główna': ['hero', 'homepage'],
       Usługi: ['services'],
@@ -21,47 +21,6 @@ export default config({
   },
 
   collections: {
-    gallery: collection({
-      label: 'Galeria realizacji',
-      slugField: 'alt',
-      path: 'content/gallery/*',
-      format: { data: 'json' },
-      previewUrl: '/realizacje',
-      schema: {
-        image: fields.image({
-          label: 'Zdjęcie',
-          directory: 'public/images/prace',
-          publicPath: '/images/prace/',
-          validation: { isRequired: true },
-        }),
-        alt: fields.slug({
-          name: {
-            label: 'Opis zdjęcia (alt)',
-            description: 'Krótki opis co jest na zdjęciu — ważne dla SEO',
-            validation: { isRequired: true },
-          },
-        }),
-        category: fields.select({
-          label: 'Kategoria',
-          defaultValue: 'liternictwo',
-          options: [
-            { label: 'Liternictwo i dopiski', value: 'liternictwo' },
-            { label: 'Renowacja nagrobków', value: 'renowacja' },
-            { label: 'Montaż tablic', value: 'montaz' },
-            { label: 'Inne', value: 'inne' },
-          ],
-        }),
-        featured: fields.checkbox({
-          label: 'Pokazuj na stronie głównej',
-          defaultValue: true,
-        }),
-        order: fields.integer({
-          label: 'Kolejność (mniejsza = wcześniej)',
-          defaultValue: 99,
-        }),
-      },
-    }),
-
     testimonials: collection({
       label: 'Opinie klientów',
       slugField: 'author',
@@ -263,6 +222,52 @@ export default config({
           directory: 'public/images/prace',
           publicPath: '/images/prace/',
         }),
+      },
+    }),
+
+    galleryData: singleton({
+      label: 'Galeria realizacji',
+      path: 'content/settings/gallery',
+      format: { data: 'json' },
+      previewUrl: '/realizacje',
+      schema: {
+        items: fields.array(
+          fields.object({
+            image: fields.image({
+              label: 'Zdjęcie',
+              description: 'Wgraj zdjęcie realizacji. Zalecane: JPG, min. 800×600px.',
+              directory: 'public/images/prace',
+              publicPath: '/images/prace/',
+              validation: { isRequired: true },
+            }),
+            alt: fields.text({
+              label: 'Opis zdjęcia',
+              description: 'Krótki opis co jest na zdjęciu — ważne dla SEO i dostępności',
+              defaultValue: 'Prace kamieniarsko-liternicze StoneArt — Tychy',
+              validation: { isRequired: true },
+            }),
+            category: fields.select({
+              label: 'Kategoria',
+              defaultValue: 'liternictwo',
+              options: [
+                { label: 'Liternictwo i dopiski', value: 'liternictwo' },
+                { label: 'Renowacja nagrobków', value: 'renowacja' },
+                { label: 'Montaż tablic', value: 'montaz' },
+                { label: 'Inne', value: 'inne' },
+              ],
+            }),
+            featured: fields.checkbox({
+              label: 'Pokazuj na stronie głównej',
+              description: 'Zaznacz, żeby zdjęcie pojawiło się w galerii na stronie głównej (max. 6 zdjęć)',
+              defaultValue: false,
+            }),
+          }),
+          {
+            label: 'Zdjęcia w galerii',
+            description: 'Przeciągnij zdjęcia, aby zmienić kolejność. Kolejność na liście = kolejność wyświetlania na stronie.',
+            itemLabel: (props) => props.fields.alt.value || 'Zdjęcie',
+          }
+        ),
       },
     }),
 
