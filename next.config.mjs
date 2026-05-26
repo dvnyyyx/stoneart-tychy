@@ -4,6 +4,9 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [],
   },
+  outputFileTracingIncludes: {
+    '/*': ['./content/**/*'],
+  },
   async redirects() {
     return [
       // non-www → www (301 permanent)
