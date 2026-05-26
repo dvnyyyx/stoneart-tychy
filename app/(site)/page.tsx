@@ -10,7 +10,7 @@ import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
 import { QuoteSection }        from '@/components/sections/QuoteSection'
 import { LocalBusinessSchema } from '@/lib/schema'
 
-export const revalidate = 3600 // odświeżaj co 1h
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'StoneArt — Piaskowanie napisów, dopiski i renowacja nagrobków, Tychy',
