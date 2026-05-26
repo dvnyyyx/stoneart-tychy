@@ -1,20 +1,29 @@
 import Link from 'next/link'
 import { getTestimonials } from '@/lib/content'
+import { getGoogleReviews } from '@/lib/reviews'
 import { TESTIMONIALS } from '@/lib/constants'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
 export async function TestimonialsSection() {
-  // Próbuj wczytać opinie z Keystatic; fallback na constants.ts
   let testimonials: { author: string; location: string; quote: string }[]
-  try {
-    const fromCMS = await getTestimonials()
-    testimonials = fromCMS.length > 0
-      ? fromCMS
-      : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
-  } catch {
-    testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+
+  // 1. Google Places API (primary)
+  const googleReviews = await getGoogleReviews()
+
+  if (googleReviews.length > 0) {
+    testimonials = googleReviews
+  } else {
+    // 2. Keystatic CMS (fallback)
+    try {
+      const fromCMS = await getTestimonials()
+      testimonials = fromCMS.length > 0
+        ? fromCMS
+        : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+    } catch {
+      testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+    }
   }
 
   // Na homepage pokazujemy 3 opinie
