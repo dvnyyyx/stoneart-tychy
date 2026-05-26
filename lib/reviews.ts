@@ -13,7 +13,7 @@ export async function getGoogleReviews(): Promise<PlacesReview[]> {
   try {
     const res = await fetch(
       `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&key=${apiKey}&language=pl&reviews_sort=newest`,
-      { next: { revalidate: 86400 } } // cache 24h
+      { cache: 'no-store' }
     )
 
     if (!res.ok) return []
