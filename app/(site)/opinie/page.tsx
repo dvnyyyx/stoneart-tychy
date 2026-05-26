@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SITE, TESTIMONIALS } from '@/lib/constants'
 import { getTestimonials } from '@/lib/content'
+import { getGoogleReviews } from '@/lib/reviews'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { BreadcrumbSchema } from '@/lib/schema'
@@ -15,13 +16,20 @@ export const metadata: Metadata = {
 
 export default async function OpiniePage() {
   let testimonials: { author: string; location: string; quote: string }[]
-  try {
-    const fromCMS = await getTestimonials()
-    testimonials = fromCMS.length > 0
-      ? fromCMS
-      : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
-  } catch {
-    testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+
+  const googleReviews = await getGoogleReviews()
+
+  if (googleReviews.length > 0) {
+    testimonials = googleReviews
+  } else {
+    try {
+      const fromCMS = await getTestimonials()
+      testimonials = fromCMS.length > 0
+        ? fromCMS
+        : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+    } catch {
+      testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+    }
   }
 
   return (
