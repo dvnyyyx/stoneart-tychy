@@ -12,7 +12,7 @@ export async function getGoogleReviews(): Promise<PlacesReview[]> {
 
   try {
     const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&key=${apiKey}&language=pl`
-    const res = await fetch(url, { cache: 'no-store' })
+    const res = await fetch(url, { next: { revalidate: false } })
 
     if (!res.ok) return []
 
