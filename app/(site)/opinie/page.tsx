@@ -64,7 +64,9 @@ export default async function OpiniePage() {
               Masz doświadczenie z naszą pracownią?
             </p>
             <a
-              href={`mailto:${SITE.email}?subject=Opinia — StoneArt`}
+              href="https://g.page/r/CV0zVsr-ocNpEBM/review"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-gold"
             >
               Napisz opinię →
