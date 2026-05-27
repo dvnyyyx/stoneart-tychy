@@ -269,25 +269,6 @@ export default config({
       },
     }),
 
-    galleryOrder: singleton({
-      label: 'Kolejność zdjęć — przeciągnij żeby zmienić',
-      path: 'content/settings/gallery-order',
-      format: { data: 'json' },
-      previewUrl: '/realizacje',
-      schema: {
-        order: fields.array(
-          fields.text({
-            label: 'Slug zdjęcia',
-          }),
-          {
-            label: 'Kolejność wyświetlania',
-            description: 'Przeciągnij wpisy żeby zmienić kolejność. Każdy wpis to slug zdjęcia (widoczny w adresie URL kiedy edytujesz zdjęcie w sekcji "Zdjęcia").',
-            itemLabel: (props) => props.value || '—',
-          }
-        ),
-      },
-    }),
-
     siteSettings: singleton({
       label: 'Dane firmy i kontakt',
       path: 'content/settings/site',
