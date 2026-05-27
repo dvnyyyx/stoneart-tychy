@@ -12,7 +12,7 @@ export default config({
   ui: {
     brand: { name: 'StoneArt CMS' },
     navigation: {
-      Galeria: ['gallery'],
+      Galeria: ['galleryData'],
       Opinie: ['testimonials'],
       'Strona główna': ['hero', 'homepage'],
       Usługi: ['services'],
@@ -21,49 +21,6 @@ export default config({
   },
 
   collections: {
-    gallery: collection({
-      label: 'Zdjęcia — dodaj / edytuj / usuń',
-      slugField: 'alt',
-      path: 'content/gallery/*',
-      format: { data: 'json' },
-      previewUrl: '/realizacje',
-      schema: {
-        image: fields.image({
-          label: 'Zdjęcie',
-          description: 'Wgraj zdjęcie realizacji. Zalecane: JPG, min. 800×600px.',
-          directory: 'public/images/prace',
-          publicPath: '/images/prace/',
-          validation: { isRequired: true },
-        }),
-        alt: fields.slug({
-          name: {
-            label: 'Opis zdjęcia (alt / slug)',
-            description: 'Krótki opis co jest na zdjęciu — ważne dla SEO. Staje się też identyfikatorem zdjęcia.',
-            validation: { isRequired: true },
-          },
-        }),
-        category: fields.select({
-          label: 'Kategoria',
-          defaultValue: 'liternictwo',
-          options: [
-            { label: 'Liternictwo i dopiski', value: 'liternictwo' },
-            { label: 'Renowacja nagrobków', value: 'renowacja' },
-            { label: 'Montaż tablic', value: 'montaz' },
-            { label: 'Inne', value: 'inne' },
-          ],
-        }),
-        featured: fields.checkbox({
-          label: 'Pokazuj na stronie głównej',
-          description: 'Zaznacz, żeby zdjęcie pojawiło się w galerii na stronie głównej.',
-          defaultValue: false,
-        }),
-        order: fields.integer({
-          label: 'Kolejność (1 = pierwsze)',
-          description: 'Ustaw numer kolejności wyświetlania. Niższy numer = wcześniej. Zostaw 0 żeby zdjęcie pojawiło się na końcu.',
-          defaultValue: 0,
-        }),
-      },
-    }),
 
     testimonials: collection({
       label: 'Opinie klientów',
@@ -155,6 +112,50 @@ export default config({
   },
 
   singletons: {
+    galleryData: singleton({
+      label: 'Galeria zdjęć',
+      path: 'content/settings/gallery',
+      format: { data: 'json' },
+      previewUrl: '/realizacje',
+      schema: {
+        photos: fields.array(
+          fields.object({
+            image: fields.image({
+              label: 'Zdjęcie',
+              description: 'Zalecane: JPG, min. 800×600 px.',
+              directory: 'public/images/prace',
+              publicPath: '/images/prace/',
+              validation: { isRequired: true },
+            }),
+            alt: fields.text({
+              label: 'Opis zdjęcia (alt)',
+              description: 'Krótki opis co jest na zdjęciu — ważne dla SEO.',
+              validation: { isRequired: true },
+            }),
+            category: fields.select({
+              label: 'Kategoria',
+              defaultValue: 'liternictwo',
+              options: [
+                { label: 'Liternictwo i dopiski', value: 'liternictwo' },
+                { label: 'Renowacja nagrobków', value: 'renowacja' },
+                { label: 'Montaż tablic', value: 'montaz' },
+                { label: 'Inne', value: 'inne' },
+              ],
+            }),
+            featured: fields.checkbox({
+              label: 'Pokaż na stronie głównej',
+              defaultValue: false,
+            }),
+          }),
+          {
+            label: 'Zdjęcia',
+            description: 'Przeciągnij żeby zmienić kolejność. Zaznacz "Pokaż na stronie głównej" dla wybranych zdjęć.',
+            itemLabel: (props) => props.fields.alt.value || 'Zdjęcie',
+          }
+        ),
+      },
+    }),
+
     hero: singleton({
       label: 'Strona główna — Hero (nagłówek)',
       path: 'content/settings/hero',
