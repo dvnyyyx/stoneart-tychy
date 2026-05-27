@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default async function OpiniePage() {
-  let testimonials: { author: string; location: string; quote: string }[]
+  let testimonials: { author: string; location: string; quote: string; rating?: number }[]
 
   const googleReviews = await getGoogleReviews()
 
@@ -25,7 +25,7 @@ export default async function OpiniePage() {
     try {
       const fromCMS = await getTestimonials()
       testimonials = fromCMS.length > 0
-        ? fromCMS
+        ? fromCMS.map((t) => ({ author: t.author, location: t.location, quote: t.quote, rating: t.rating }))
         : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
     } catch {
       testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
@@ -53,6 +53,7 @@ export default async function OpiniePage() {
                   quote={t.quote}
                   author={t.author}
                   location={t.location}
+                  rating={t.rating}
                   variant="dark"
                 />
               </AnimatedReveal>

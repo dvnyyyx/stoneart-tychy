@@ -7,7 +7,7 @@ import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
 export async function TestimonialsSection() {
-  let testimonials: { author: string; location: string; quote: string }[]
+  let testimonials: { author: string; location: string; quote: string; rating?: number }[]
 
   // 1. Google Places API (primary)
   const googleReviews = await getGoogleReviews()
@@ -19,7 +19,7 @@ export async function TestimonialsSection() {
     try {
       const fromCMS = await getTestimonials()
       testimonials = fromCMS.length > 0
-        ? fromCMS
+        ? fromCMS.map((t) => ({ author: t.author, location: t.location, quote: t.quote, rating: t.rating }))
         : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
     } catch {
       testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
@@ -55,6 +55,7 @@ export async function TestimonialsSection() {
                 quote={t.quote}
                 author={t.author}
                 location={t.location}
+                rating={t.rating}
                 variant="dark"
               />
             </AnimatedReveal>

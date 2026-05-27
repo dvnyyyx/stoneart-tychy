@@ -2,6 +2,7 @@ export type PlacesReview = {
   author: string
   location: string
   quote: string
+  rating: number
 }
 
 export async function getGoogleReviews(): Promise<PlacesReview[]> {
@@ -25,6 +26,7 @@ export async function getGoogleReviews(): Promise<PlacesReview[]> {
         author: r.author_name as string,
         location: `${r.relative_time_description as string} · Google`,
         quote: r.text as string,
+        rating: r.rating as number,
       }))
   } catch {
     return []

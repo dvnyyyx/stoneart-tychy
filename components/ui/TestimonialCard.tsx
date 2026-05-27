@@ -4,14 +4,37 @@ interface TestimonialCardProps {
   quote: string
   author: string
   location: string
+  rating?: number
   variant?: 'dark' | 'light'
   className?: string
+}
+
+function Stars({ rating, isDark }: { rating: number; isDark: boolean }) {
+  const gold = isDark ? 'var(--color-gold)' : 'var(--color-gold-dark)'
+  const empty = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'
+  return (
+    <div aria-label={`Ocena: ${rating} na 5`} style={{ display: 'flex', gap: '3px' }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <svg
+          key={i}
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill={i <= rating ? gold : empty}
+          aria-hidden="true"
+        >
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      ))}
+    </div>
+  )
 }
 
 export function TestimonialCard({
   quote,
   author,
   location,
+  rating,
   variant = 'dark',
   className,
 }: TestimonialCardProps) {
@@ -25,6 +48,9 @@ export function TestimonialCard({
         className
       )}
     >
+      {/* Gwiazdki (jeśli podane) */}
+      {rating != null && <Stars rating={rating} isDark={isDark} />}
+
       {/* Cudzysłów dekoracyjny */}
       <div
         aria-hidden="true"
