@@ -1,5 +1,7 @@
 import { createReader } from '@keystatic/core/reader'
 import keystaticConfig from '../keystatic.config'
+import fs from 'fs'
+import path from 'path'
 
 // Keystatic reader — używany w Server Components (SSG/SSR)
 export const reader = createReader(process.cwd(), keystaticConfig)
@@ -10,6 +12,18 @@ export function resolveImage(value: string | null | undefined, publicPath = '/im
   if (!value) return ''
   if (value.startsWith('/') || value.startsWith('http')) return value
   return publicPath + value
+}
+
+// Czyta kolejność zdjęć z pliku gallery-order.json (zarządzany przez /admin/galeria)
+function getGalleryOrder(): string[] | null {
+  try {
+    const filePath = path.join(process.cwd(), 'content/settings/gallery-order.json')
+    const content = fs.readFileSync(filePath, 'utf-8')
+    const parsed = JSON.parse(content)
+    return Array.isArray(parsed) ? parsed : null
+  } catch {
+    return null
+  }
 }
 
 // Helper: opinie klientów
@@ -27,7 +41,7 @@ export async function getFeaturedTestimonials() {
   return all.filter((t) => t.featured).slice(0, 3)
 }
 
-// Helper: galeria — sortowanie wg pola order na każdym zdjęciu (0 = na końcu)
+// Helper: galeria — sortowanie wg gallery-order.json, fallback na pole order
 export async function getGallery() {
   const slugs = await reader.collections.gallery.list()
   const itemsRaw = await Promise.all(
@@ -38,6 +52,18 @@ export async function getGallery() {
   )
   const items = itemsRaw.filter(Boolean) as (NonNullable<typeof itemsRaw[number]>)[]
 
+  // Priorytet: kolejność z gallery-order.json (drag-and-drop admin)
+  const orderedSlugs = getGalleryOrder()
+  if (orderedSlugs && orderedSlugs.length > 0) {
+    const orderMap = new Map(orderedSlugs.map((slug, i) => [slug, i]))
+    return items.sort((a, b) => {
+      const ai = orderMap.has(a.slug) ? (orderMap.get(a.slug) as number) : Infinity
+      const bi = orderMap.has(b.slug) ? (orderMap.get(b.slug) as number) : Infinity
+      return ai - bi
+    })
+  }
+
+  // Fallback: pole order (0 = na końcu)
   return items.sort((a, b) => {
     const ao = a.order ?? 0
     const bo = b.order ?? 0
