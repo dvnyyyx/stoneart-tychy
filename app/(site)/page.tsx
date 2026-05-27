@@ -19,11 +19,27 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  // Zdjęcia edytorialne z Keystatic (fallback na photos.ts)
   let editorial1: { src: string; alt: string } | undefined
   let editorial2: { src: string; alt: string } | undefined
+  let aboutLabel = 'O pracowni'
+  let aboutTitle = 'Precyzja i dbałość o szczegóły.'
+  let aboutText1 = 'Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Działamy na terenie Tychów i okolicznych miejscowości, wykonując usługi zarówno dla klientów indywidualnych, jak i zakładów kamieniarskich.'
+  let aboutText2 = 'Rozumiemy, że nagrobek jest miejscem pamięci bliskich osób. Do każdego zlecenia podchodzimy z należytą starannością i szacunkiem.'
+  let qualityLabel = 'Jak pracujemy'
+  let qualityTitle = 'Solidnie, estetycznie, trwale.'
+  let qualityText1 = 'Każde zlecenie realizujemy indywidualnie, zwracając uwagę na estetykę, trwałość i dokładność wykonania. Pracujemy na różnych rodzajach kamienia naturalnego, dobierając odpowiednią technikę do każdego przypadku.'
+  let qualityText2 = 'W wielu przypadkach do wstępnej wyceny wystarczą zdjęcia przesłane telefonicznie. Napisz lub zadzwoń — bezpośredni kontakt na każdym etapie zlecenia, wycena bezpłatna.'
+
   try {
     const cms = await getHomepageContent()
+    if (cms?.aboutLabel) aboutLabel = cms.aboutLabel
+    if (cms?.aboutTitle) aboutTitle = cms.aboutTitle
+    if (cms?.aboutText1) aboutText1 = cms.aboutText1
+    if (cms?.aboutText2) aboutText2 = cms.aboutText2
+    if (cms?.qualityLabel) qualityLabel = cms.qualityLabel
+    if (cms?.qualityTitle) qualityTitle = cms.qualityTitle
+    if (cms?.qualityText1) qualityText1 = cms.qualityText1
+    if (cms?.qualityText2) qualityText2 = cms.qualityText2
     editorial1 = cms?.editorialImage1
       ? { src: resolveImage(cms.editorialImage1), alt: 'StoneArt — pracownia kamieniarsko-liternicza' }
       : PHOTOS[2] ? { src: photoSrc(PHOTOS[2].file), alt: PHOTOS[2].alt } : undefined
@@ -41,20 +57,12 @@ export default async function HomePage() {
       <Hero />
 
       <EditorialSection
-        label="O pracowni"
-        title="Precyzja i dbałość o szczegóły."
+        label={aboutLabel}
+        title={aboutTitle}
         body={
           <>
-            <p>
-              Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów
-              oraz renowacji nagrobków i tablic granitowych. Działamy na terenie
-              Tychów i okolicznych miejscowości, wykonując usługi zarówno dla
-              klientów indywidualnych, jak i zakładów kamieniarskich.
-            </p>
-            <p style={{ marginTop: '16px' }}>
-              Rozumiemy, że nagrobek jest miejscem pamięci bliskich osób.
-              Do każdego zlecenia podchodzimy z należytą starannością i szacunkiem.
-            </p>
+            <p>{aboutText1}</p>
+            <p style={{ marginTop: '16px' }}>{aboutText2}</p>
           </>
         }
         linkLabel="O pracowni"
@@ -69,21 +77,12 @@ export default async function HomePage() {
       <RealizationGallery />
 
       <EditorialSection
-        label="Jak pracujemy"
-        title="Solidnie, estetycznie, trwale."
+        label={qualityLabel}
+        title={qualityTitle}
         body={
           <>
-            <p>
-              Każde zlecenie realizujemy indywidualnie, zwracając uwagę na
-              estetykę, trwałość i dokładność wykonania. Pracujemy na różnych
-              rodzajach kamienia naturalnego, dobierając odpowiednią technikę
-              do każdego przypadku.
-            </p>
-            <p style={{ marginTop: '16px' }}>
-              W wielu przypadkach do wstępnej wyceny wystarczą zdjęcia przesłane
-              telefonicznie. Napisz lub zadzwoń — bezpośredni kontakt na każdym
-              etapie zlecenia, wycena bezpłatna.
-            </p>
+            <p>{qualityText1}</p>
+            <p style={{ marginTop: '16px' }}>{qualityText2}</p>
           </>
         }
         linkLabel="Zapytaj o wycenę"

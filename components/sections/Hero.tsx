@@ -6,10 +6,12 @@ import { getHeroContent, resolveImage } from '@/lib/content'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 
 export async function Hero() {
-  // Czyta z Keystatic, fallback na stałą HERO_PHOTO
+  // Czyta z Keystatic, fallback na stałe wartości
   let heroImageSrc: string | null = null
+  let cms: Awaited<ReturnType<typeof getHeroContent>> = null
+
   try {
-    const cms = await getHeroContent()
+    cms = await getHeroContent()
     if (cms?.heroImage) {
       heroImageSrc = resolveImage(cms.heroImage)
     }
@@ -19,6 +21,13 @@ export async function Hero() {
   if (!heroImageSrc && HERO_PHOTO) {
     heroImageSrc = photoSrc(HERO_PHOTO)
   }
+
+  const label = cms?.label || 'Pracownia rzemieślnicza — Tychy, Śląskie'
+  const titleLine1 = cms?.titleLine1 || 'Usługi'
+  const titleLine2 = cms?.titleLine2 || 'kamieniarsko-'
+  const titleLine3 = cms?.titleLine3 || 'liternicze.'
+  const description = cms?.description || 'Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Tychy i okolice — do wyceny wystarczą zdjęcia.'
+  const ctaPrimary = cms?.ctaPrimary || 'Zapytaj o wycenę'
 
   return (
     <section
@@ -65,17 +74,17 @@ export async function Hero() {
       <div className="relative z-10 container-stone py-20 lg:py-28 w-full">
         <div className="max-w-[560px]">
           <SectionLabel variant="light" withLine className="mb-6">
-            Pracownia rzemieślnicza — Tychy, Śląskie
+            {label}
           </SectionLabel>
 
           <h1
             className="font-display text-on-dark leading-[1.05] mb-6"
             style={{ fontSize: 'clamp(44px, 6vw, 78px)', fontWeight: 400, letterSpacing: '-0.01em' }}
           >
-            Usługi<br />
-            kamieniarsko-<br />
+            {titleLine1}<br />
+            {titleLine2}<br />
             <span className="italic" style={{ color: 'rgba(255,255,255,0.7)' }}>
-              liternicze.
+              {titleLine3}
             </span>
           </h1>
 
@@ -83,14 +92,12 @@ export async function Hero() {
             className="text-on-dark-secondary text-[17px] leading-[1.75] max-w-[420px] mb-10"
             style={{ fontFamily: 'var(--font-body)' }}
           >
-            Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów
-            oraz renowacji nagrobków i tablic granitowych. Tychy i okolice —
-            do wyceny wystarczą zdjęcia.
+            {description}
           </p>
 
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <Link href="/wycena" className="btn-gold">
-              Zapytaj o wycenę
+              {ctaPrimary}
             </Link>
             <a
               href={SITE.phoneHref}
