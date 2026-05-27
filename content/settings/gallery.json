@@ -1,10 +1,22 @@
 {
   "photos": [
     {
-      "image": "/images/prace/realizacja-napisu-na-gotowym-nagrobku-kamieniarstwo/image.jpeg",
+      "image": "/images/prace/photos/0/image.jpeg",
       "alt": "Realizacja napisu na gotowym nagrobku kamieniarstwo",
       "category": "liternictwo",
       "featured": true
+    },
+    {
+      "image": "/images/prace/photos/1/image.jpeg",
+      "alt": "Gotowy projekt literniczy na nagrobku",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
+      "image": "/images/prace/photos/2/image.jpeg",
+      "alt": "Kamieniarstwo realizacja na nagrobku",
+      "category": "liternictwo",
+      "featured": false
     }
   ]
 }
