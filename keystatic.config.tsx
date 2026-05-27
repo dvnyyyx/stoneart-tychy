@@ -12,7 +12,7 @@ export default config({
   ui: {
     brand: { name: 'StoneArt CMS' },
     navigation: {
-      Galeria: ['gallery', 'galleryOrder'],
+      Galeria: ['gallery'],
       Opinie: ['testimonials'],
       'Strona główna': ['hero', 'homepage'],
       Usługi: ['services'],
@@ -56,6 +56,11 @@ export default config({
           label: 'Pokazuj na stronie głównej',
           description: 'Zaznacz, żeby zdjęcie pojawiło się w galerii na stronie głównej.',
           defaultValue: false,
+        }),
+        order: fields.integer({
+          label: 'Kolejność (1 = pierwsze)',
+          description: 'Ustaw numer kolejności wyświetlania. Niższy numer = wcześniej. Zostaw 0 żeby zdjęcie pojawiło się na końcu.',
+          defaultValue: 0,
         }),
       },
     }),

@@ -27,7 +27,7 @@ export async function getFeaturedTestimonials() {
   return all.filter((t) => t.featured).slice(0, 3)
 }
 
-// Helper: galeria — kolejność z galleryOrder singletonem (drag-and-drop)
+// Helper: galeria — sortowanie wg pola order na każdym zdjęciu (0 = na końcu)
 export async function getGallery() {
   const slugs = await reader.collections.gallery.list()
   const itemsRaw = await Promise.all(
@@ -38,20 +38,14 @@ export async function getGallery() {
   )
   const items = itemsRaw.filter(Boolean) as (NonNullable<typeof itemsRaw[number]>)[]
 
-  // Sortuj wg kolejności z singletonem; nowe zdjęcia (bez wpisu) idą na koniec
-  const orderData = await reader.singletons.galleryOrder.read()
-  const order = orderData?.order ?? []
-  if (order.length > 0) {
-    return items.sort((a, b) => {
-      const ai = order.indexOf(a.slug)
-      const bi = order.indexOf(b.slug)
-      if (ai === -1 && bi === -1) return 0
-      if (ai === -1) return 1
-      if (bi === -1) return -1
-      return ai - bi
-    })
-  }
-  return items
+  return items.sort((a, b) => {
+    const ao = a.order ?? 0
+    const bo = b.order ?? 0
+    if (ao === 0 && bo === 0) return 0
+    if (ao === 0) return 1
+    if (bo === 0) return -1
+    return ao - bo
+  })
 }
 
 // Helper: tylko zdjęcia wyróżnione (strona główna)
