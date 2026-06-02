@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { SERVICES, SITE } from '@/lib/constants'
+import { SITE } from '@/lib/constants'
+import { getServices } from '@/lib/content'
 import { PageHeader }   from '@/components/shared/PageHeader'
-import { ServiceCard }  from '@/components/ui/ServiceCard'
 import { BreadcrumbSchema } from '@/lib/schema'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/uslugi` },
 }
 
-export default function UslugiPage() {
+export default async function UslugiPage() {
+  const services = await getServices()
+
   return (
     <>
       <BreadcrumbSchema items={[{ name: 'Usługi', href: '/uslugi' }]} />
@@ -28,7 +30,7 @@ export default function UslugiPage() {
       <section className="bg-stone-bg py-section-md">
         <div className="container-stone">
           <div className="grid grid-cols-1 gap-px bg-stone-border">
-            {SERVICES.map((service, i) => (
+            {services.map((service, i) => (
               <AnimatedReveal key={service.slug} delay={i * 80}>
                 <Link
                   href={`/uslugi/${service.slug}`}

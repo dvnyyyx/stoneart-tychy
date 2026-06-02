@@ -3,8 +3,9 @@ import { notFound }       from 'next/navigation'
 import Link               from 'next/link'
 import Image              from 'next/image'
 import { Check }          from 'lucide-react'
-import { SERVICES, SITE } from '@/lib/constants'
+import { SITE } from '@/lib/constants'
 import { PHOTOS, photoSrc } from '@/lib/photos'
+import { getServices, getService } from '@/lib/content'
 import { PageHeader }     from '@/components/shared/PageHeader'
 import { QuoteSection }   from '@/components/sections/QuoteSection'
 import { ServiceSchema, BreadcrumbSchema } from '@/lib/schema'
@@ -15,11 +16,12 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return SERVICES.map((s) => ({ slug: s.slug }))
+  const services = await getServices()
+  return services.map((s) => ({ slug: s.slug }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const service = SERVICES.find((s) => s.slug === params.slug)
+  const service = await getService(params.slug)
   if (!service) return {}
 
   return {
@@ -34,13 +36,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default function ServicePage({ params }: PageProps) {
-  const service = SERVICES.find((s) => s.slug === params.slug)
+export default async function ServicePage({ params }: PageProps) {
+  const [service, allServices] = await Promise.all([
+    getService(params.slug),
+    getServices(),
+  ])
   if (!service) notFound()
 
-  const related = SERVICES.filter((s) => s.slug !== service.slug).slice(0, 2)
+  const related = allServices.filter((s) => s.slug !== service.slug).slice(0, 2)
 
-  // Pierwsze dostępne zdjęcie z galerii jako okładka usługi
   const coverPhoto = PHOTOS[0] ? photoSrc(PHOTOS[0].file) : null
 
   return (
@@ -53,21 +57,18 @@ export default function ServicePage({ params }: PageProps) {
         ]}
       />
 
-      {/* Header */}
       <div className="bg-stone-light border-b border-stone-border">
         <PageHeader
-          label={service.category}
+          label={service.category ?? 'Usługi'}
           title={service.title}
           lead={service.description}
         />
       </div>
 
-      {/* Zdjęcie główne + zakres */}
       <section className="bg-stone-bg py-section-sm">
         <div className="container-stone">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
-            {/* Zdjęcie */}
             <AnimatedReveal direction="fade">
               {coverPhoto ? (
                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -81,7 +82,6 @@ export default function ServicePage({ params }: PageProps) {
                   />
                 </div>
               ) : (
-                /* Placeholder — zanim dodasz zdjęcia */
                 <div
                   className="aspect-[4/3] bg-stone-dark flex items-end p-8"
                   style={{ background: 'linear-gradient(135deg, #2D2D2D 0%, #1a1a1a 100%)' }}
@@ -94,7 +94,6 @@ export default function ServicePage({ params }: PageProps) {
               )}
             </AnimatedReveal>
 
-            {/* Zakres prac */}
             <AnimatedReveal delay={100}>
               <p
                 className="mb-8"
@@ -103,7 +102,7 @@ export default function ServicePage({ params }: PageProps) {
                 Zakres prac
               </p>
               <ul className="flex flex-col gap-0" role="list">
-                {service.features.map((feature, i) => (
+                {(service.features ?? []).map((feature, i) => (
                   <li
                     key={i}
                     className="flex items-start gap-4 py-4"
@@ -124,8 +123,8 @@ export default function ServicePage({ params }: PageProps) {
                 <Link href="/wycena" className="btn-primary">
                   Zapytaj o wycenę
                 </Link>
-                <a href="tel:+48734130388" className="btn-ghost flex items-center gap-2">
-                  734 130 388
+                <a href={`tel:+48${SITE.phone.replace(/\s/g, '')}`} className="btn-ghost flex items-center gap-2">
+                  {SITE.phone}
                 </a>
               </div>
             </AnimatedReveal>
@@ -133,7 +132,6 @@ export default function ServicePage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* Inne usługi */}
       {related.length > 0 && (
         <section className="bg-stone-light py-section-sm border-t border-stone-border">
           <div className="container-stone">
@@ -166,7 +164,6 @@ export default function ServicePage({ params }: PageProps) {
         </section>
       )}
 
-      {/* Formularz wyceny */}
       <QuoteSection />
     </>
   )
