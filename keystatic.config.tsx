@@ -100,6 +100,12 @@ export default config({
             itemLabel: (props) => props.value || 'Punkt',
           }
         ),
+        image: fields.image({
+          label: 'Zdjęcie usługi',
+          description: 'Zdjęcie wyświetlane na podstronie usługi. Zalecane: JPG, min. 800×600 px.',
+          directory: 'public/images/prace',
+          publicPath: '/images/prace/',
+        }),
         featured: fields.checkbox({
           label: 'Główna usługa (wyróżniona na stronie głównej)',
           defaultValue: false,

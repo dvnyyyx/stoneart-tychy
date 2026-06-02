@@ -5,7 +5,7 @@ import Image              from 'next/image'
 import { Check }          from 'lucide-react'
 import { SITE } from '@/lib/constants'
 import { PHOTOS, photoSrc } from '@/lib/photos'
-import { getServices, getService } from '@/lib/content'
+import { getServices, getService, resolveImage } from '@/lib/content'
 import { PageHeader }     from '@/components/shared/PageHeader'
 import { QuoteSection }   from '@/components/sections/QuoteSection'
 import { ServiceSchema, BreadcrumbSchema } from '@/lib/schema'
@@ -45,7 +45,9 @@ export default async function ServicePage({ params }: PageProps) {
 
   const related = allServices.filter((s) => s.slug !== service.slug).slice(0, 2)
 
-  const coverPhoto = PHOTOS[0] ? photoSrc(PHOTOS[0].file) : null
+  const coverPhoto = service.image
+    ? resolveImage(service.image)
+    : PHOTOS[0] ? photoSrc(PHOTOS[0].file) : null
 
   return (
     <>
