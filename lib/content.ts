@@ -39,6 +39,30 @@ export async function getFeaturedGallery() {
   return all.filter((p) => p.featured)
 }
 
+// Helper: wszystkie usługi (posortowane po order)
+export async function getServices() {
+  const slugs = await reader.collections.services.list()
+  const items = await Promise.all(
+    slugs.map(async (slug) => {
+      const data = await reader.collections.services.read(slug)
+      return data ? { ...data, slug } : null
+    })
+  )
+  const valid = items.filter(Boolean) as (NonNullable<typeof items[number]>)[]
+  return valid.sort((a, b) => (a.order ?? 99) - (b.order ?? 99))
+}
+
+// Helper: jedna usługa po slug
+export async function getService(slug: string) {
+  const data = await reader.collections.services.read(slug)
+  return data ? { ...data, slug } : null
+}
+
+// Helper: treść strony O pracowni
+export async function getONasContent() {
+  return reader.singletons.oNas.read()
+}
+
 // Helper: ustawienia firmy
 export async function getSiteSettings() {
   return reader.singletons.siteSettings.read()

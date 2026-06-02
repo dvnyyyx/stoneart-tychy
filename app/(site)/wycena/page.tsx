@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { SITE } from '@/lib/constants'
+import { getSiteSettings } from '@/lib/content'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { QuoteForm }  from '@/components/ui/QuoteForm'
 import { BreadcrumbSchema } from '@/lib/schema'
-import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { Phone, Mail, MapPin } from 'lucide-react'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
 export const metadata: Metadata = {
@@ -12,12 +13,20 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/wycena` },
 }
 
-export default function WycenaPage() {
+export default async function WycenaPage() {
+  let site: Awaited<ReturnType<typeof getSiteSettings>> = null
+  try { site = await getSiteSettings() } catch {}
+
+  const phone   = site?.phone   || SITE.phone
+  const email   = site?.email   || SITE.email
+  const address = site?.address || SITE.address
+  const city    = site?.city    || SITE.city
+  const hours   = site?.hours   || SITE.hours
+
   return (
     <>
       <BreadcrumbSchema items={[{ name: 'Wycena', href: '/wycena' }]} />
 
-      {/* Header */}
       <div className="bg-stone-light border-b border-stone-border">
         <PageHeader
           label="Wycena"
@@ -26,12 +35,10 @@ export default function WycenaPage() {
         />
       </div>
 
-      {/* Content */}
       <section className="bg-stone-bg py-section-md">
         <div className="container-stone">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-16 lg:gap-24">
 
-            {/* Dane kontaktowe */}
             <AnimatedReveal>
               <div>
                 <h2 className="font-display text-display-sm text-ink mb-8" style={{ fontWeight: 400 }}>
@@ -43,23 +50,23 @@ export default function WycenaPage() {
                     {
                       icon: <Phone size={18} strokeWidth={1.5} />,
                       label: 'Telefon',
-                      value: SITE.phone,
-                      href:  SITE.phoneHref,
-                      note:  SITE.hours,
+                      value: phone,
+                      href:  `tel:+48${phone.replace(/\s/g, '')}`,
+                      note:  hours,
                     },
                     {
                       icon: <Mail size={18} strokeWidth={1.5} />,
                       label: 'E-mail',
-                      value: SITE.email,
-                      href:  `mailto:${SITE.email}`,
+                      value: email,
+                      href:  `mailto:${email}`,
                       note:  'Odpiszemy do 24h',
                     },
                     {
                       icon: <MapPin size={18} strokeWidth={1.5} />,
                       label: 'Adres',
-                      value: SITE.address,
+                      value: address,
                       href:  undefined,
-                      note:  `${SITE.city}, woj. ${SITE.region}`,
+                      note:  city,
                     },
                   ].map((item, i) => (
                     <div
@@ -107,7 +114,6 @@ export default function WycenaPage() {
               </div>
             </AnimatedReveal>
 
-            {/* Formularz */}
             <AnimatedReveal delay={100}>
               <div
                 className="bg-stone-white p-7 lg:p-10"

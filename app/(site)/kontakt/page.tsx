@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SITE } from '@/lib/constants'
+import { getSiteSettings } from '@/lib/content'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { BreadcrumbSchema } from '@/lib/schema'
-import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { Phone, Mail, MapPin } from 'lucide-react'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
 export const metadata: Metadata = {
@@ -12,7 +13,17 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/kontakt` },
 }
 
-export default function KontaktPage() {
+export default async function KontaktPage() {
+  let site: Awaited<ReturnType<typeof getSiteSettings>> = null
+  try { site = await getSiteSettings() } catch {}
+
+  const phone   = site?.phone   || SITE.phone
+  const email   = site?.email   || SITE.email
+  const address = site?.address || SITE.address
+  const city    = site?.city    || SITE.city
+  const hours   = site?.hours   || SITE.hours
+  const mapsUrl = site?.googleMapsUrl || `https://maps.google.com/?q=${encodeURIComponent((site?.address || SITE.address) + ', ' + (site?.city || SITE.city))}`
+
   return (
     <>
       <BreadcrumbSchema items={[{ name: 'Kontakt', href: '/kontakt' }]} />
@@ -21,37 +32,36 @@ export default function KontaktPage() {
         <PageHeader
           label="Kontakt"
           title="Skontaktuj się z nami."
-          lead={`Pracujemy od poniedziałku do piątku, ${SITE.hours}. Odpiszemy lub oddzwonimy najszybciej jak to możliwe.`}
+          lead={`Pracujemy od poniedziałku do piątku, ${hours}. Odpiszemy lub oddzwonimy najszybciej jak to możliwe.`}
         />
       </div>
 
       <section className="bg-stone-bg py-section-md">
         <div className="container-stone">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-stone-border">
-
             {[
               {
                 icon:  <Phone size={22} strokeWidth={1.5} />,
                 label: 'Telefon',
-                main:  SITE.phone,
-                href:  SITE.phoneHref,
-                sub:   SITE.hours,
+                main:  phone,
+                href:  `tel:+48${phone.replace(/\s/g, '')}`,
+                sub:   hours,
                 cta:   'Zadzwoń teraz',
               },
               {
                 icon:  <Mail size={22} strokeWidth={1.5} />,
                 label: 'E-mail',
-                main:  SITE.email,
-                href:  `mailto:${SITE.email}`,
+                main:  email,
+                href:  `mailto:${email}`,
                 sub:   'Odpiszemy w ciągu 24 godzin',
                 cta:   'Napisz wiadomość',
               },
               {
                 icon:  <MapPin size={22} strokeWidth={1.5} />,
                 label: 'Adres',
-                main:  SITE.address,
-                href:  `https://maps.google.com/?q=${encodeURIComponent(SITE.address + ', ' + SITE.city)}`,
-                sub:   `${SITE.city}, woj. ${SITE.region}`,
+                main:  address,
+                href:  mapsUrl,
+                sub:   city,
                 cta:   'Pokaż na mapie',
               },
             ].map((item, i) => (
@@ -88,7 +98,6 @@ export default function KontaktPage() {
             ))}
           </div>
 
-          {/* CTA do wyceny */}
           <AnimatedReveal delay={200} className="mt-16 text-center">
             <p className="font-display text-display-sm text-ink mb-4" style={{ fontWeight: 400 }}>
               Wolisz wypełnić formularz?

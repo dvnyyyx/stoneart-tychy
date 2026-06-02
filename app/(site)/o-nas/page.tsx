@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { SITE } from '@/lib/constants'
+import { getONasContent } from '@/lib/content'
 import { PageHeader }       from '@/components/shared/PageHeader'
 import { EditorialSection } from '@/components/sections/EditorialSection'
 import { QuoteSection }     from '@/components/sections/QuoteSection'
@@ -11,7 +12,25 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/o-nas` },
 }
 
-export default function ONasPage() {
+export default async function ONasPage() {
+  let cms: Awaited<ReturnType<typeof getONasContent>> = null
+  try { cms = await getONasContent() } catch {}
+
+  const pageTitle = cms?.pageTitle || 'StoneArt — Tychy.'
+  const pageLead  = cms?.pageLead  || 'Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Działamy na terenie Tychów i okolicznych miejscowości.'
+  const s1Label   = cms?.s1Label   || 'Czym się zajmujemy'
+  const s1Title   = cms?.s1Title   || 'Liternictwo, dopiski i renowacja nagrobków.'
+  const s1Text1   = cms?.s1Text1   || 'Zajmujemy się wykonywaniem nowych napisów, dopisków liter i dat, odświeżaniem istniejących inskrypcji oraz pracami związanymi z odnawianiem nagrobków. Pracujemy na różnych rodzajach kamienia naturalnego, dbając o odpowiedni dobór techniki oraz zachowanie czytelności i stylu napisów.'
+  const s1Text2   = cms?.s1Text2   || 'Wykonujemy usługi zarówno dla klientów indywidualnych, jak i zakładów kamieniarskich.'
+  const s2Label   = cms?.s2Label   || 'Podejście do pracy'
+  const s2Title   = cms?.s2Title   || 'Szacunek do każdego zlecenia.'
+  const s2Text1   = cms?.s2Text1   || 'Rozumiemy, że nagrobek jest miejscem pamięci bliskich osób, dlatego do każdego zlecenia podchodzimy z należytą starannością i szacunkiem. W naszej pracy liczy się przede wszystkim precyzja i dbałość o szczegóły.'
+  const s2Text2   = cms?.s2Text2   || 'Stawiamy na uczciwe podejście, terminowość oraz bezpośredni kontakt z klientem na każdym etapie realizacji zlecenia. Naszym celem jest świadczenie usług solidnych, estetycznych i trwałych — tak, aby efekty naszej pracy służyły przez długie lata.'
+  const s3Label   = cms?.s3Label   || 'Wycena'
+  const s3Title   = cms?.s3Title   || 'Zdjęcia wystarczą.'
+  const s3Text1   = cms?.s3Text1   || 'W wielu przypadkach do wstępnej wyceny wystarczą zdjęcia przesłane telefonicznie, co pozwala szybko określić zakres prac oraz termin realizacji.'
+  const s3Text2   = cms?.s3Text2   || 'Napisz lub zadzwoń — bezpośredni kontakt na każdym etapie, wycena bezpłatna.'
+
   return (
     <>
       <BreadcrumbSchema items={[{ name: 'O pracowni', href: '/o-nas' }]} />
@@ -19,27 +38,18 @@ export default function ONasPage() {
       <div className="bg-stone-light border-b border-stone-border">
         <PageHeader
           label="O pracowni"
-          title="StoneArt — Tychy."
-          lead="Specjalizujemy się w liternictwie nagrobnym, piaskowaniu napisów oraz renowacji nagrobków i tablic granitowych. Działamy na terenie Tychów i okolicznych miejscowości."
+          title={pageTitle}
+          lead={pageLead}
         />
       </div>
 
       <EditorialSection
-        label="Czym się zajmujemy"
-        title="Liternictwo, dopiski i renowacja nagrobków."
+        label={s1Label}
+        title={s1Title}
         body={
           <>
-            <p>
-              Zajmujemy się wykonywaniem nowych napisów, dopisków liter i dat,
-              odświeżaniem istniejących inskrypcji oraz pracami związanymi
-              z odnawianiem nagrobków. Pracujemy na różnych rodzajach kamienia
-              naturalnego, dbając o odpowiedni dobór techniki oraz zachowanie
-              czytelności i stylu napisów.
-            </p>
-            <p style={{ marginTop: '16px' }}>
-              Wykonujemy usługi zarówno dla klientów indywidualnych,
-              jak i zakładów kamieniarskich.
-            </p>
+            <p>{s1Text1}</p>
+            {s1Text2 && <p style={{ marginTop: '16px' }}>{s1Text2}</p>}
           </>
         }
         imagePosition="right"
@@ -48,22 +58,12 @@ export default function ONasPage() {
       />
 
       <EditorialSection
-        label="Podejście do pracy"
-        title="Szacunek do każdego zlecenia."
+        label={s2Label}
+        title={s2Title}
         body={
           <>
-            <p>
-              Rozumiemy, że nagrobek jest miejscem pamięci bliskich osób,
-              dlatego do każdego zlecenia podchodzimy z należytą starannością
-              i szacunkiem. W naszej pracy liczy się przede wszystkim precyzja
-              i dbałość o szczegóły.
-            </p>
-            <p style={{ marginTop: '16px' }}>
-              Stawiamy na uczciwe podejście, terminowość oraz bezpośredni
-              kontakt z klientem na każdym etapie realizacji zlecenia.
-              Naszym celem jest świadczenie usług solidnych, estetycznych
-              i trwałych — tak, aby efekty naszej pracy służyły przez długie lata.
-            </p>
+            <p>{s2Text1}</p>
+            {s2Text2 && <p style={{ marginTop: '16px' }}>{s2Text2}</p>}
           </>
         }
         imagePosition="left"
@@ -72,19 +72,12 @@ export default function ONasPage() {
       />
 
       <EditorialSection
-        label="Wycena"
-        title="Zdjęcia wystarczą."
+        label={s3Label}
+        title={s3Title}
         body={
           <>
-            <p>
-              W wielu przypadkach do wstępnej wyceny wystarczą zdjęcia przesłane
-              telefonicznie, co pozwala szybko określić zakres prac oraz termin
-              realizacji.
-            </p>
-            <p style={{ marginTop: '16px' }}>
-              Napisz lub zadzwoń — bezpośredni kontakt na każdym etapie,
-              wycena bezpłatna.
-            </p>
+            <p>{s3Text1}</p>
+            {s3Text2 && <p style={{ marginTop: '16px' }}>{s3Text2}</p>}
           </>
         }
         linkLabel="Zapytaj o wycenę"
