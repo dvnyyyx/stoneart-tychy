@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import NextImage from 'next/image'
 import { cn } from '@/lib/utils'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 
@@ -34,16 +34,35 @@ export function ServiceCard({
           className
         )}
       >
+        {/* Opcjonalne zdjęcie w tle */}
+        {image && (
+          <div className="absolute inset-0 overflow-hidden">
+            <NextImage
+              src={image}
+              alt=""
+              fill
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              className="object-cover"
+              style={{ opacity: 0.15 }}
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(135deg, rgba(18,18,18,0.92) 0%, rgba(30,30,30,0.75) 100%)' }}
+            />
+          </div>
+        )}
+
         {/* Dekoracyjny pasek złoty — lewy border */}
         <div
-          className="absolute left-0 top-0 bottom-0 w-[3px]"
+          className="absolute left-0 top-0 bottom-0 w-[3px] z-10"
           style={{
             background: 'var(--color-gold)',
             clipPath: 'polygon(0 4px, 100% 0, 100% 100%, 0 calc(100% - 4px))',
           }}
         />
 
-        <div>
+        <div className="relative z-10">
           <SectionLabel variant="light" className="mb-4">
             {category}
           </SectionLabel>
@@ -60,7 +79,7 @@ export function ServiceCard({
           </p>
         </div>
 
-        <div className="mt-8">
+        <div className="relative z-10 mt-8">
           <div className="bar-motif bar-motif--light mb-5">
             <div className="bar-motif__dark" />
             <div className="bar-motif__gold" />
@@ -75,7 +94,7 @@ export function ServiceCard({
 
         {/* Hover overlay */}
         <div
-          className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100 z-20"
           style={{ background: 'rgba(196,184,122,0.03)' }}
         />
       </Link>

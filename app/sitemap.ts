@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
 import { SITE, SERVICES } from '@/lib/constants'
+import { getServices } from '@/lib/content'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -14,8 +15,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/kontakt`,         lastModified: now, changeFrequency: 'yearly',  priority: 0.7  },
   ]
 
-  const serviceRoutes: MetadataRoute.Sitemap = SERVICES.map((service) => ({
-    url: `${SITE.url}/uslugi/${service.slug}`,
+  let serviceSlugs: string[] = SERVICES.map((s) => s.slug)
+  try {
+    const cmsServices = await getServices()
+    if (cmsServices.length > 0) {
+      serviceSlugs = cmsServices.map((s) => s.slug)
+    }
+  } catch {
+    // keep constants fallback
+  }
+
+  const serviceRoutes: MetadataRoute.Sitemap = serviceSlugs.map((slug) => ({
+    url: `${SITE.url}/uslugi/${slug}`,
     lastModified: now,
     changeFrequency: 'yearly' as const,
     priority: 0.85,

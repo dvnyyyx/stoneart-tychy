@@ -1,12 +1,21 @@
 import Link from 'next/link'
-import { SERVICES } from '@/lib/constants'
+import { getServices, resolveImage } from '@/lib/content'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 import { ServiceCard } from '@/components/ui/ServiceCard'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
-export function ServiceGrid() {
-  const featured  = SERVICES.find((s) => s.featured)!
-  const secondary = SERVICES.filter((s) => !s.featured)
+export async function ServiceGrid() {
+  let services: Awaited<ReturnType<typeof getServices>>
+  try {
+    services = await getServices()
+  } catch {
+    return null
+  }
+
+  const featured  = services.find((s) => s.featured) ?? services[0]
+  const secondary = services.filter((s) => s.slug !== featured?.slug)
+
+  if (!featured) return null
 
   return (
     <section className="bg-stone-bg py-section-md">
@@ -32,14 +41,15 @@ export function ServiceGrid() {
         */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr_1fr] gap-px bg-stone-border">
 
-          {/* Karta wyróżniona — renowacja nagrobków */}
+          {/* Karta wyróżniona */}
           <AnimatedReveal className="row-span-2">
             <ServiceCard
               slug={featured.slug}
               title={featured.title}
-              category={featured.category}
+              category={featured.category ?? ''}
               description={featured.description}
               featured={true}
+              image={featured.image ? resolveImage(featured.image) : undefined}
               className="h-full min-h-[300px] lg:min-h-[420px]"
             />
           </AnimatedReveal>
@@ -50,9 +60,10 @@ export function ServiceGrid() {
               <ServiceCard
                 slug={service.slug}
                 title={service.title}
-                category={service.category}
+                category={service.category ?? ''}
                 description={service.description}
                 featured={false}
+                image={service.image ? resolveImage(service.image) : undefined}
                 className="h-full min-h-[160px]"
               />
             </AnimatedReveal>

@@ -1,4 +1,4 @@
-import { SITE, SERVICES, TESTIMONIALS } from './constants'
+import { SITE } from './constants'
 
 // Schema.org LocalBusiness — komponent React renderujący JSON-LD
 export function LocalBusinessSchema() {
@@ -56,26 +56,31 @@ export function LocalBusinessSchema() {
   )
 }
 
-export function ServiceSchema({ slug }: { slug: string }) {
-  const service = SERVICES.find((s) => s.slug === slug)
-  if (!service) return null
-
+export function ServiceSchema({
+  slug,
+  title,
+  description,
+}: {
+  slug: string
+  title: string
+  description: string
+}) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: service.title,
-    description: service.description,
+    name: title,
+    description: description,
     provider: {
       '@type': 'LocalBusiness',
       name: SITE.fullName,
       '@id': `${SITE.url}/#business`,
     },
-    serviceType: service.title,
+    serviceType: title,
     areaServed: {
       '@type': 'State',
       name: 'województwo śląskie',
     },
-    url: `${SITE.url}/uslugi/${service.slug}`,
+    url: `${SITE.url}/uslugi/${slug}`,
   }
 
   return (

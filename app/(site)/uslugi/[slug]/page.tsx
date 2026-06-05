@@ -51,7 +51,7 @@ export default async function ServicePage({ params }: PageProps) {
 
   return (
     <>
-      <ServiceSchema slug={service.slug} />
+      <ServiceSchema slug={service.slug} title={service.title} description={service.description} />
       <BreadcrumbSchema
         items={[
           { name: 'Usługi', href: '/uslugi' },

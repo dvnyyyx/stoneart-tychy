@@ -1,10 +1,24 @@
 import Link from 'next/link'
 import { Phone, Mail, MapPin } from 'lucide-react'
 import { SITE, NAV_LINKS, SERVICES } from '@/lib/constants'
+import { getServices } from '@/lib/content'
 import { StoneArtLogo } from '@/components/shared/StoneArtLogo'
 
-export function Footer() {
+export async function Footer() {
   const year = new Date().getFullYear()
+
+  let serviceLinks: { slug: string; title: string }[] = SERVICES.map((s) => ({
+    slug: s.slug,
+    title: s.title,
+  }))
+  try {
+    const cmsServices = await getServices()
+    if (cmsServices.length > 0) {
+      serviceLinks = cmsServices.map((s) => ({ slug: s.slug, title: s.title }))
+    }
+  } catch {
+    // keep constants fallback
+  }
 
   return (
     <footer>
@@ -85,7 +99,7 @@ export function Footer() {
                 Usługi
               </h3>
               <ul className="flex flex-col gap-2.5">
-                {SERVICES.map((service) => (
+                {serviceLinks.map((service) => (
                   <li key={service.slug}>
                     <Link
                       href={`/uslugi/${service.slug}`}
