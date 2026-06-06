@@ -3,6 +3,7 @@ import Script from 'next/script'
 import { playfair, inter, cormorant } from '@/lib/fonts'
 import { SITE } from '@/lib/constants'
 import { Analytics } from '@vercel/analytics/next'
+import { CookieBanner } from '@/components/ui/CookieBanner'
 import './globals.css'
 
 const GTM_ID = 'GTM-PVJ96CRF'
@@ -76,7 +77,20 @@ export default function RootLayout({
           />
         </noscript>
         {children}
+        <CookieBanner />
         <Analytics />
+        {/* Domyślna blokada GA4 — musi być przed GTM */}
+        <Script
+          id="consent-defaults"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer=window.dataLayer||[];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('consent','default',{analytics_storage:'denied',wait_for_update:500});
+            `,
+          }}
+        />
         <Script
           id="gtm"
           strategy="afterInteractive"
