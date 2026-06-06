@@ -8,7 +8,7 @@ import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
 export const metadata: Metadata = {
   title: 'Usługi kamieniarsko-liternicze — Tychy i okolice',
-  description: 'Liternictwo nagrobne, dopiski liter i dat, piaskowanie napisów, renowacja nagrobków i montaż tablic. Klienci indywidualni i zakłady kamieniarskie — Tychy i okolice.',
+  description: 'Liternictwo nagrobne, dopiski liter i dat, piaskowanie napisów, renowacja nagrobków i montaż tablic. Klienci i zakłady kamieniarskie — Tychy i okolice.',
   alternates: { canonical: `${SITE.url}/uslugi` },
 }
 
