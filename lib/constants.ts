@@ -12,7 +12,7 @@ export const SITE = {
   postcode:    '43-100',
   country:     'PL',
   url:         'https://www.stoneart-tychy.pl',
-  description: 'Liternictwo nagrobne, piaskowanie napisów i renowacja nagrobków w Tychach. Wykonujemy dopiski liter i dat, nowe napisy oraz odnawiamy tablice granitowe. Klienci indywidualni i zakłady kamieniarskie.',
+  description: 'Liternictwo nagrobne i renowacja nagrobków w Tychach. Dopiski liter i dat, piaskowanie napisów, odnawianie tablic granitowych. Klienci i zakłady kamieniarskie.',
   hours:       'Pon.–Pt. 9:00–17:00',
 } as const
 

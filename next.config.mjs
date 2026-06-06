@@ -9,6 +9,12 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // /index.php → strona główna (301 permanent)
+      {
+        source: '/index.php',
+        destination: '/',
+        permanent: true,
+      },
       // non-www → www (301 permanent)
       {
         source: '/:path*',

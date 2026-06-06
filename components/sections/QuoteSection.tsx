@@ -30,8 +30,11 @@ export function QuoteSection() {
             </h2>
 
             <p className="text-body-md text-ink-secondary prose-stone leading-[1.75] mb-8">
-              Opisz zakres prac i podaj lokalizację cmentarza. Możesz dołączyć
-              zdjęcia — wycenimy szybko i bez zobowiązań.
+              Opisz zakres prac —{' '}
+              <strong>liternictwo i dopiski</strong>,{' '}
+              <strong>piaskowanie napisów</strong>,{' '}
+              <strong>renowacja nagrobków</strong> — i podaj lokalizację cmentarza.
+              Możesz dołączyć zdjęcia, wycenimy szybko i bez zobowiązań.
             </p>
 
             {/* Dane kontaktowe */}

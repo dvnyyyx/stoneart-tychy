@@ -11,11 +11,6 @@ export const metadata: Metadata = {
     template: `%s | ${SITE.name} Tychy`,
   },
   description: SITE.description,
-  keywords: [
-    'liternictwo nagrobne Tychy', 'dopiski na nagrobku', 'piaskowanie napisów nagrobki',
-    'renowacja nagrobków Tychy', 'kamieniarstwo Tychy', 'odświeżanie napisów nagrobek',
-    'montaż tablic nagrobnych', 'zakład kamieniarski Tychy',
-  ],
   authors: [{ name: SITE.owner }],
   creator: SITE.owner,
   openGraph: {
