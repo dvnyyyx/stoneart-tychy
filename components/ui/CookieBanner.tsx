@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 declare global {
   interface Window {
@@ -70,7 +71,10 @@ export function CookieBanner() {
           style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}
         >
           Używamy plików cookie Google Analytics do analizy ruchu na stronie.
-          Dane są anonimowe i pomagają nam ulepszać serwis.
+          Dane są anonimowe i pomagają nam ulepszać serwis.{' '}
+          <Link href="/polityka-prywatnosci" style={{ color: 'rgba(196,184,122,0.6)', textDecoration: 'underline' }}>
+            Polityka Prywatności
+          </Link>
         </p>
 
         <div className="flex items-center gap-3 shrink-0">

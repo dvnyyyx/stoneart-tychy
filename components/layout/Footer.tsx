@@ -194,9 +194,18 @@ export async function Footer() {
             <p className="text-[11px] text-on-dark-secondary" style={{ color: 'rgba(255,255,255,0.2)' }}>
               © {year} StoneArt {SITE.owner}
             </p>
-            <p className="text-[11px]" style={{ color: 'rgba(196,184,122,0.3)' }}>
-              {SITE.address} · {SITE.phone}
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="text-[11px]" style={{ color: 'rgba(196,184,122,0.3)' }}>
+                {SITE.address} · {SITE.phone}
+              </p>
+              <Link
+                href="/polityka-prywatnosci"
+                className="text-[11px] transition-colors duration-200 hover:opacity-60"
+                style={{ color: 'rgba(255,255,255,0.18)' }}
+              >
+                Polityka Prywatności
+              </Link>
+            </div>
           </div>
         </div>
       </div>

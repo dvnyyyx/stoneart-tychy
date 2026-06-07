@@ -9,6 +9,7 @@ npm run dev      # start dev server (localhost:3000)
 npm run build    # production build
 npm run start    # production server (after build)
 npm run lint     # ESLint via Next.js
+npx tsc --noEmit # type-check without emitting files
 ```
 
 The Keystatic CMS admin panel is available at `/keystatic` in dev mode. It requires GitHub OAuth — changes are committed directly to the `dvnyyyx/stoneart-tychy` repo.
@@ -60,6 +61,11 @@ Images uploaded via Keystatic are stored in `public/images/prace/` and reference
 Required env vars for email:
 ```
 SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM
+```
+
+Required env vars for Keystatic GitHub OAuth (CMS admin panel):
+```
+KEYSTATIC_GITHUB_CLIENT_ID, KEYSTATIC_GITHUB_CLIENT_SECRET, KEYSTATIC_SECRET
 ```
 
 Optional env vars for live Google reviews (`lib/reviews.ts`):
@@ -121,6 +127,12 @@ Three fonts loaded via `lib/fonts.ts` using `next/font/google`, injected as CSS 
 - `--font-playfair` / `.font-display` / `font-family: display` — Playfair Display (headings)
 - `--font-inter` / `font-family: body` — Inter (body text, labels, buttons)
 - `--font-cormorant` / `.font-quote` / `font-family: quote` — Cormorant Garamond (testimonial quotes)
+
+### Analytics & Consent
+
+GTM ID (`GTM-PVJ96CRF`) is hardcoded in `app/layout.tsx` — not an env var. The layout injects a `<script id="consent-defaults">` **before** the GTM snippet that sets `analytics_storage: 'denied'` with `wait_for_update: 500ms` (Google Consent Mode v2).
+
+`components/ui/CookieBanner` is a client component that manages the `stoneart_consent` cookie (1-year, `SameSite=Lax`). On mount it reads the stored value: if `'granted'` it re-fires `gtag('consent','update',{analytics_storage:'granted'})` immediately; if absent it shows the banner. Accept/reject write the cookie and call `window.gtag` to update consent state. The banner never re-appears once a choice is stored.
 
 ### SEO
 
