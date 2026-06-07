@@ -12,6 +12,8 @@ npm run lint     # ESLint via Next.js
 npx tsc --noEmit # type-check without emitting files
 ```
 
+There are no automated tests in this project.
+
 The Keystatic CMS admin panel is available at `/keystatic` in dev mode. It requires GitHub OAuth — changes are committed directly to the `dvnyyyx/stoneart-tychy` repo.
 
 ## Architecture
@@ -31,6 +33,7 @@ Public pages under `app/(site)/` (shared `Header`/`Footer` layout):
 - `/opinie` — testimonials
 - `/wycena` — quote request form
 - `/kontakt` — contact
+- `/polityka-prywatnosci` — privacy policy (RODO); `robots: {index: false}` — not indexed
 
 Other routes:
 - `app/keystatic/` — CMS admin UI
@@ -81,7 +84,7 @@ GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID
 - `components/shared/` — small reusables (`AnimatedReveal`, `PageHeader`, `SectionLabel`, `StoneArtLogo`)
 - `components/ui/` — interactive UI pieces (`QuoteForm`, `BeforeAfterSlider`, `Lightbox`, `ServiceCard`, `TestimonialCard`, `ImageUpload`)
 
-Animations use **Framer Motion** via the `AnimatedReveal` wrapper. The `clsx` + `tailwind-merge` combo is used for conditional class merging (`lib/utils.ts`).
+Animations use **Framer Motion** via the `AnimatedReveal` wrapper. The `clsx` + `tailwind-merge` combo is used for conditional class merging (`lib/utils.ts`). Icons come from `lucide-react`. `QuoteForm` is built with `react-hook-form` + `@hookform/resolvers/zod` (client component with file upload support via `ImageUpload`).
 
 `app/opengraph-image.tsx` and `app/icon.tsx` generate the default OG image (1200×630) and favicon (32×32) programmatically via Next.js `ImageResponse`. The static `/og/default.jpg` is also served as a fallback OG image referenced in root metadata.
 

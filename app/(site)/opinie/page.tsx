@@ -8,6 +8,8 @@ import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { BreadcrumbSchema } from '@/lib/schema'
 import { AnimatedReveal }  from '@/components/shared/AnimatedReveal'
 
+export const revalidate = 86400 // odświeżaj opinie Google raz na dobę
+
 export const metadata: Metadata = {
   title: 'Opinie klientów',
   description: 'Opinie klientów StoneArt — renowacja nagrobków i prace kamieniarskie w Tychach i na Śląsku.',
