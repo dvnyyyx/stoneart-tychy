@@ -47,8 +47,8 @@ export function LocalBusinessSchema() {
     image: `${SITE.url}/og/default.jpg`,
     logo: `${SITE.url}/logo/LOGOX.svg`,
     sameAs: [
-      // Profil Google (link „Udostępnij" z wizytówki) — uzupełnić właściwym URL-em.
-      'https://g.page/r/CV0zVsr-ocNpEBM',
+      'https://share.google/aAioXdh7wENSno8WP', // wizytówka Google
+      'https://www.facebook.com/profile.php?id=61578436661238', // Facebook
     ],
   }
 
