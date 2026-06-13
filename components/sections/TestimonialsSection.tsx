@@ -1,33 +1,23 @@
 import Link from 'next/link'
 import { getTestimonials } from '@/lib/content'
-import { getGoogleReviews } from '@/lib/reviews'
 import { TESTIMONIALS } from '@/lib/constants'
 import { SectionLabel } from '@/components/shared/SectionLabel'
-import { TestimonialCard } from '@/components/ui/TestimonialCard'
+import { ReviewsList, type Review } from '@/components/ui/ReviewsList'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
 export async function TestimonialsSection() {
-  let testimonials: { author: string; location: string; quote: string; rating?: number }[]
-
-  // 1. Google Places API (primary)
-  const googleReviews = await getGoogleReviews()
-
-  if (googleReviews.length > 0) {
-    testimonials = googleReviews
-  } else {
-    // 2. Keystatic CMS (fallback)
-    try {
-      const fromCMS = await getTestimonials()
-      testimonials = fromCMS.length > 0
-        ? fromCMS.map((t) => ({ author: t.author, location: t.location, quote: t.quote, rating: t.rating }))
-        : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
-    } catch {
-      testimonials = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
-    }
+  // Bazowe opinie renderowane serwerowo (CMS → stałe). Świeże opinie Google
+  // dociąga ReviewsList po stronie klienta z /api/reviews — strona główna
+  // pozostaje statyczna.
+  let initial: Review[]
+  try {
+    const fromCMS = await getTestimonials()
+    initial = fromCMS.length > 0
+      ? fromCMS.map((t) => ({ author: t.author, location: t.location, quote: t.quote, rating: t.rating }))
+      : TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
+  } catch {
+    initial = TESTIMONIALS.map((t) => ({ author: t.author, location: t.location, quote: t.quote }))
   }
-
-  // Na homepage pokazujemy 3 opinie
-  const displayed = testimonials.slice(0, 3)
 
   return (
     <section className="bg-stone-dark stone-texture py-section-md overflow-hidden">
@@ -48,19 +38,12 @@ export async function TestimonialsSection() {
           </Link>
         </AnimatedReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
-          {displayed.map((t, i) => (
-            <AnimatedReveal key={t.author} delay={i * 100}>
-              <TestimonialCard
-                quote={t.quote}
-                author={t.author}
-                location={t.location}
-                rating={t.rating}
-                variant="dark"
-              />
-            </AnimatedReveal>
-          ))}
-        </div>
+        <ReviewsList
+          initial={initial}
+          limit={3}
+          gridClassName="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16"
+          delayStep={100}
+        />
 
         {/* Separator */}
         <div className="mt-12 pt-10" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
