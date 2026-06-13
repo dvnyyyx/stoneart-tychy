@@ -76,7 +76,7 @@ export default async function ServicePage({ params }: PageProps) {
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={coverPhoto}
-                    alt={service.title}
+                    alt={`${service.title} — StoneArt Tychy`}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover"

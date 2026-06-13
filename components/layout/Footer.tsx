@@ -92,12 +92,12 @@ export async function Footer() {
 
             {/* Kolumna 2: Usługi */}
             <div>
-              <h3
+              <h2
                 className="text-on-dark mb-5"
                 style={{ fontFamily: 'var(--font-body)', fontSize: '9px', fontWeight: 400, letterSpacing: '0.18em', textTransform: 'uppercase' }}
               >
                 Usługi
-              </h3>
+              </h2>
               <ul className="flex flex-col gap-2.5">
                 {serviceLinks.map((service) => (
                   <li key={service.slug}>
@@ -114,12 +114,12 @@ export async function Footer() {
 
             {/* Kolumna 3: Firma */}
             <div>
-              <h3
+              <h2
                 className="text-on-dark mb-5"
                 style={{ fontFamily: 'var(--font-body)', fontSize: '9px', fontWeight: 400, letterSpacing: '0.18em', textTransform: 'uppercase' }}
               >
                 Firma
-              </h3>
+              </h2>
               <ul className="flex flex-col gap-2.5">
                 {[
                   { label: 'O pracowni', href: '/o-nas' },
@@ -141,12 +141,12 @@ export async function Footer() {
 
             {/* Kolumna 4: CTA */}
             <div>
-              <h3
+              <h2
                 className="text-on-dark mb-5"
                 style={{ fontFamily: 'var(--font-body)', fontSize: '9px', fontWeight: 400, letterSpacing: '0.18em', textTransform: 'uppercase' }}
               >
                 Wycena
-              </h3>
+              </h2>
               <p className="text-[13px] text-on-dark-secondary leading-[1.75] mb-5">
                 Bezpłatna wycena.<br />
                 Odpiszemy lub oddzwonimy<br />

@@ -8,7 +8,7 @@ import { ServiceGrid }         from '@/components/sections/ServiceGrid'
 import { RealizationGallery }  from '@/components/sections/RealizationGallery'
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
 import { QuoteSection }        from '@/components/sections/QuoteSection'
-import { LocalBusinessSchema } from '@/lib/schema'
+import { LocalBusinessSchema, WebSiteSchema } from '@/lib/schema'
 
 export const revalidate = false // strona statyczna — rebuild przy każdym deployu
 
@@ -54,6 +54,7 @@ export default async function HomePage() {
   return (
     <>
       <LocalBusinessSchema />
+      <WebSiteSchema />
       <Hero />
 
       <EditorialSection

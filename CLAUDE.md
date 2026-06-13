@@ -20,7 +20,9 @@ The Keystatic CMS admin panel is available at `/keystatic` in dev mode. It requi
 
 **Next.js 14 (App Router) + Keystatic CMS + Tailwind CSS**
 
-This is a Polish-language marketing site for a stonework/lettering workshop (StoneArt Tychy). The site is fully static (`revalidate = false` on all pages) and rebuilds on every deploy.
+This is a Polish-language marketing site for a stonework/lettering workshop (StoneArt Tychy). All pages are fully static (`revalidate = false`) and rebuild on every deploy. Google reviews are intentionally decoupled from page rendering: they are fetched client-side from the `/api/reviews` route handler (CDN-cached ~24 h), so reviews refresh without a redeploy **and pages never re-render at runtime** — which previously dropped CMS-read gallery images on the home page and `/opinie`.
+
+Imports use the `@/*` path alias mapped to the repo root (`tsconfig.json`), e.g. `import { getServices } from '@/lib/content'`.
 
 ### Routing
 
@@ -39,6 +41,7 @@ Other routes:
 - `app/keystatic/` — CMS admin UI
 - `app/api/keystatic/` — Keystatic backend API handler
 - `app/api/quote/` — quote request form handler (nodemailer, SMTP via env vars)
+- `app/api/reviews/` — Google reviews endpoint (`force-dynamic`, CDN-cached 24 h via `Cache-Control`); read client-side by `ReviewsList`. Isolated from the Keystatic reader, so it can run at runtime safely.
 
 ### Content layer
 
@@ -75,7 +78,7 @@ Optional env vars for live Google reviews (`lib/reviews.ts`):
 ```
 GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID
 ```
-`getGoogleReviews()` returns `[]` silently when these are absent — used as a supplementary source alongside Keystatic testimonials.
+`getGoogleReviews()` returns `[]` silently when these are absent. It is called **only** by the `/api/reviews` route handler — never in a page/component server render. Pages render Keystatic/hardcoded testimonials server-side as the baseline; the `ReviewsList` client component (`components/ui/ReviewsList.tsx`) then fetches `/api/reviews` and swaps in live Google reviews (progressive enhancement). Keep server components free of `getGoogleReviews()` so `/opinie` and the homepage stay fully static.
 
 ### Component structure
 
@@ -139,4 +142,4 @@ GTM ID (`GTM-PVJ96CRF`) is hardcoded in `app/layout.tsx` — not an env var. The
 
 ### SEO
 
-`lib/schema-components.tsx` provides JSON-LD structured data (`LocalBusinessSchema`, `ServiceSchema`, `BreadcrumbSchema`). `lib/schema.ts` re-exports them — always import from `lib/schema` (not `lib/schema-components`). **Note:** `lib/schema.tsx` is an unreachable duplicate of `lib/schema-components.tsx` (TypeScript resolves `.ts` before `.tsx` when both `lib/schema.ts` and `lib/schema.tsx` exist) and should be deleted. `app/sitemap.ts` and `app/robots.ts` are auto-generated. The site redirects non-www to www (configured in `next.config.mjs`).
+`lib/schema-components.tsx` provides JSON-LD structured data (`LocalBusinessSchema`, `WebSiteSchema`, `ServiceSchema`, `BreadcrumbSchema`). `WebSiteSchema` + `LocalBusinessSchema` render once on the homepage; `ServiceSchema`/`BreadcrumbSchema` render per relevant page. `lib/schema.ts` re-exports them — always import from `lib/schema` (not `lib/schema-components`). **Note:** `lib/schema.tsx` is an unreachable duplicate of `lib/schema-components.tsx` (TypeScript resolves `.ts` before `.tsx` when both `lib/schema.ts` and `lib/schema.tsx` exist) and should be deleted; `next.config.ts.bak` is a stale backup of the (now `.mjs`) config and is likewise safe to delete. `app/sitemap.ts` and `app/robots.ts` are auto-generated. `next.config.mjs` redirects non-www → www, the old `stoneart.tychy.pl` host → www, and `/index.php` → `/` (all 301).

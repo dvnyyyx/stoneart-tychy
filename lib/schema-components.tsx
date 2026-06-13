@@ -45,7 +45,32 @@ export function LocalBusinessSchema() {
     ],
     priceRange: '$$',
     image: `${SITE.url}/og/default.jpg`,
-    sameAs: [],
+    logo: `${SITE.url}/logo/LOGOX.svg`,
+    sameAs: [
+      // Profil Google (link „Udostępnij" z wizytówki) — uzupełnić właściwym URL-em.
+      'https://g.page/r/CV0zVsr-ocNpEBM',
+    ],
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+// Schema.org WebSite — encja witryny (renderować raz, np. na stronie głównej)
+export function WebSiteSchema() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
+    name: SITE.fullName,
+    alternateName: SITE.name,
+    url: SITE.url,
+    inLanguage: 'pl-PL',
+    publisher: { '@id': `${SITE.url}/#business` },
   }
 
   return (
@@ -76,9 +101,15 @@ export function ServiceSchema({
       '@id': `${SITE.url}/#business`,
     },
     serviceType: title,
-    areaServed: {
-      '@type': 'State',
-      name: 'województwo śląskie',
+    areaServed: [
+      { '@type': 'City', name: 'Tychy' },
+      { '@type': 'City', name: 'Katowice' },
+      { '@type': 'AdministrativeArea', name: 'województwo śląskie' },
+    ],
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'PLN',
+      availability: 'https://schema.org/InStock',
     },
     url: `${SITE.url}/uslugi/${slug}`,
   }

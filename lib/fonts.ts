@@ -3,11 +3,11 @@ import { Playfair_Display, Inter, Cormorant_Garamond } from 'next/font/google'
 // Display / Headings — wysokokontrastowy serif jak w logo StoneArt
 export const playfair = Playfair_Display({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '700'],
+  weight: ['400'], // 500/700 nieużywane — nagłówki mają font-weight:400 (globals.css)
   style: ['normal', 'italic'],
   variable: '--font-playfair',
   display: 'swap',
-  preload: false,
+  preload: true, // font nagłówka H1 — kandydat na LCP
 })
 
 // Body — czytelny sans-serif

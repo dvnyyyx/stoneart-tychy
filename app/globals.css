@@ -339,6 +339,13 @@
   .will-animate {
     will-change: transform, opacity;
   }
+
+  /* Szanuj preferencję ograniczonego ruchu */
+  @media (prefers-reduced-motion: reduce) {
+    .will-animate {
+      transition: none !important;
+    }
+  }
 }
 
 @layer utilities {

@@ -33,6 +33,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${SITE.name} — Liternictwo nagrobne i renowacja nagrobków, Tychy`,
+    description: SITE.description,
+    images: ['/og/default.jpg'],
+  },
   robots: {
     index: true,
     follow: true,
@@ -68,6 +74,10 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} ${cormorant.variable}`}
     >
       <body className="antialiased">
+        {/* Bez JS: pokaż treść animowaną (fallback dla AnimatedReveal) */}
+        <noscript>
+          <style>{`.will-animate{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
