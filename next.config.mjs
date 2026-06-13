@@ -4,8 +4,11 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [],
   },
-  outputFileTracingIncludes: {
-    '/*': ['./content/**/*'],
+  // W Next 14 ten klucz należy do `experimental` (na top-level trafił dopiero w Next 15).
+  experimental: {
+    outputFileTracingIncludes: {
+      '/*': ['./content/**/*'],
+    },
   },
   async redirects() {
     return [
