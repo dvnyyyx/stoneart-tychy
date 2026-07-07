@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, Loader2 } from 'lucide-react'
@@ -18,6 +18,8 @@ type SubmitState = 'idle' | 'submitting' | 'success' | 'error'
 export function QuoteForm({ className }: QuoteFormProps) {
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  // Honeypot — pole-pułapka niewidoczne dla ludzi; boty je wypełniają.
+  const honeypotRef = useRef<HTMLInputElement>(null)
 
   const {
     register,
@@ -35,6 +37,7 @@ export function QuoteForm({ className }: QuoteFormProps) {
       const formData = new FormData()
       Object.entries(data).forEach(([key, val]) => formData.append(key, val))
       uploadedFiles.forEach((file) => formData.append('photos', file))
+      formData.append('company', honeypotRef.current?.value ?? '')
 
       const res = await fetch('/api/quote', {
         method: 'POST',
@@ -90,6 +93,19 @@ export function QuoteForm({ className }: QuoteFormProps) {
       noValidate
       aria-label="Formularz zapytania o wycenę"
     >
+      {/* Honeypot — ukryty przed użytkownikami; jeśli wypełniony, serwer odrzuca zgłoszenie jako spam. */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
+        <label htmlFor="quote-company">Nie wypełniaj tego pola</label>
+        <input
+          id="quote-company"
+          type="text"
+          name="company"
+          ref={honeypotRef}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       {/* Imię i nazwisko */}
       <div>
         <label htmlFor="quote-name" className="form-label">

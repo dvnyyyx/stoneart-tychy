@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { quoteFormSchema } from '@/lib/validations'
+import { validatePhotos } from '@/lib/upload'
 import { SITE } from '@/lib/constants'
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData()
+
+    // Honeypot: pole "company" jest ukryte w formularzu — wypełnia je tylko bot.
+    // Zwracamy sukces bez wysyłki, żeby nie ujawniać mechanizmu.
+    const honeypot = formData.get('company')
+    if (typeof honeypot === 'string' && honeypot.trim() !== '') {
+      return NextResponse.json({ success: true })
+    }
 
     // Wyciągnij pola tekstowe
     const raw = {
@@ -26,6 +34,13 @@ export async function POST(req: NextRequest) {
 
     const data = parsed.data
     const photos = formData.getAll('photos') as File[]
+
+    // Walidacja załączników po stronie serwera (magic bytes + limity).
+    // Kontrole klienta da się ominąć wysyłając POST bezpośrednio tutaj.
+    const photoCheck = await validatePhotos(photos)
+    if (!photoCheck.ok) {
+      return NextResponse.json({ error: photoCheck.error }, { status: 400 })
+    }
 
     // ========================================================
     // Email via nodemailer — uzupełnij dane SMTP w .env.local:
@@ -63,9 +78,9 @@ Wysłano ze strony stoneart.tychy.pl
         },
       })
 
-      // Przygotuj załączniki ze zdjęciami
+      // Przygotuj załączniki ze zdjęciami (tylko realne pliki)
       const attachments = await Promise.all(
-        photos.map(async (photo) => ({
+        photos.filter((p) => p && p.size > 0).map(async (photo) => ({
           filename: photo.name,
           content:  Buffer.from(await photo.arrayBuffer()),
           contentType: photo.type,
