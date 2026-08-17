@@ -1,0 +1,27 @@
+{
+  "links": [
+    {
+      "label": "Usługi",
+      "href": "/uslugi"
+    },
+    {
+      "label": "Realizacje",
+      "href": "/realizacje"
+    },
+    {
+      "label": "O nas",
+      "href": "/o-nas"
+    },
+    {
+      "label": "Opinie",
+      "href": "/opinie"
+    },
+    {
+      "label": "Kontakt",
+      "href": "/kontakt"
+    }
+  ],
+  "ctaLabel": "Zapytaj o wycenę",
+  "ctaHref": "/wycena",
+  "tagline": "Usługi Kamieniarsko-Liternicze"
+}

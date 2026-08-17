@@ -14,7 +14,9 @@ npx tsc --noEmit # type-check without emitting files
 
 There are no automated tests in this project.
 
-The Keystatic CMS admin panel is available at `/keystatic` in dev mode. It requires GitHub OAuth — changes are committed directly to the `dvnyyyx/stoneart-tychy` repo.
+The Keystatic CMS admin panel is at `/keystatic`. **Storage mode is environment-dependent** (`keystatic.config.tsx`): `kind: 'local'` in dev (writes straight to disk, no OAuth) and `kind: 'github'` in production (commits to `dvnyyyx/stoneart-tychy`, which triggers a Vercel rebuild). This split removes the old "sometimes saves, sometimes doesn't" failure: in dev there is no remote state that local files can diverge from.
+
+`app/api/keystatic/[...params]/route.ts` builds the Keystatic handler **lazily**, on first request. Keystatic validates the GitHub OAuth env vars at module import in `github` mode, which used to abort the entire `next build` in any environment without the secrets (local build, CI, fresh clone). With lazy init the build always passes and a missing configuration surfaces as a readable 500 in the CMS panel instead.
 
 ## Architecture
 
@@ -47,18 +49,32 @@ Other routes:
 
 All CMS content lives in `content/` as JSON files, managed via **Keystatic** with GitHub storage. The Keystatic config is in `keystatic.config.tsx` and defines:
 
-- **Collections**: `services` (`content/services/*.json`), `testimonials` (`content/testimonials/*.json`)
-- **Singletons**: `hero`, `homepage`, `galleryData`, `oNas`, `siteSettings` — all under `content/settings/`
+- **Collections**: `services`, `testimonials`, `gallery`, `categories` (`content/<name>/*.json`)
+- **Singletons**: `hero`, `homepage`, `oNas`, `uslugiPage`, `realizacjePage`, `opiniePage`, `kontaktPage`, `wycenaPage`, `privacyPage`, `quoteForm`, `navigation`, `footer`, `siteSettings` — all under `content/settings/`
 
-`lib/content.ts` exposes typed async helpers (`getServices`, `getTestimonials`, `getGallery`, `getSiteSettings`, etc.) that wrap the Keystatic reader. Pages call these in Server Components and fall back to hardcoded defaults if the CMS read fails.
+Every visible string, link, label and image on the site comes from one of these. Nothing user-facing is hardcoded in components any more.
+
+**The gallery is a collection, not a singleton array.** It used to be `galleryData` — a single JSON holding every photo — so adding one photo rewrote the whole list and could clobber entries written concurrently. One file per photo removes that class of conflict. Gallery `category` is a `fields.relationship` pointing at the `categories` collection, so the client adds filter categories in the CMS without a code change.
+
+### Content defaults
+
+`lib/defaults.ts` holds a typed default object for every singleton (`SITE_DEFAULTS`, `HOMEPAGE_DEFAULTS`, …) mirroring the seeded JSON. `lib/content.ts` wraps the Keystatic reader with `readSingleton()`, which **never throws and never returns null**: a failed read logs and returns the defaults, and `withDefaults()` merges per field, treating `null`, `''` and `[]` as "not set". Pages therefore consume a complete object and carry no fallback logic of their own.
+
+This is deliberate: fallbacks used to be inlined per page, which meant an empty CMS read rendered a plausible-looking page and hid the failure. Now a failed read is logged once, in one place (`[content] …` in build output).
+
+Collection getters (`getServices`, `getTestimonials`, `getGallery`, `getCategories`) return typed, sorted arrays and `[]` on failure. `getGallery()` drops entries with no image so `<Image src="">` can never be rendered.
 
 `next.config.mjs` sets `outputFileTracingIncludes: { '/*': ['./content/**/*'] }` so Vercel's file-tracing bundles the `content/` JSON files into the serverless deployment — without this, the Keystatic reader would find no files at runtime.
 
 Images uploaded via Keystatic are stored in `public/images/prace/` and referenced with `publicPath: '/images/prace/'`. Use `resolveImage()` from `lib/content.ts` to normalize image paths (handles both relative and absolute formats returned by the reader).
 
-### Hardcoded fallbacks
+### Constants
 
-`lib/constants.ts` contains hardcoded `SITE`, `NAV_LINKS`, `SERVICES`, `TESTIMONIALS`, and `WORK_TYPES` constants. These serve as fallback data when CMS content is unavailable. `lib/photos.ts` lists static image filenames from `public/images/prace/`.
+`lib/constants.ts` holds only what cannot live in the CMS because it is needed outside an async read: `SITE_URL` (used for `metadataBase`, canonicals and sitemap), `GTM_ID`, `OG_IMAGE`, `LOGO_PATH`. Company data (phone, e-mail, address, hours, description) lives in Keystatic.
+
+`lib/photos.ts` was deleted. It listed image filenames (`IMG_0413.jpeg`, `granit-impala.png`) that no longer existed on disk, so every "fallback" path it fed rendered a broken image.
+
+Images in `public/images/prace/` are flat and descriptively named. They used to be nested (`photos/0/image.jpeg`) with three orphaned duplicate directories, ~40 MB total; now ~7.4 MB, deduplicated, max 2000 px.
 
 ### Quote form
 
@@ -67,7 +83,11 @@ Images uploaded via Keystatic are stored in `public/images/prace/` and reference
 Required env vars for email:
 ```
 SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM
+SMTP_SECURE  # optional, "true" forces TLS on a non-465 port
+SMTP_TO      # optional, overrides the recipient; otherwise the CMS e-mail is used
 ```
+
+In production a missing `SMTP_HOST` returns a 500 instead of a silent success — a quote that is never delivered must not look sent.
 
 Required env vars for Keystatic GitHub OAuth (CMS admin panel):
 ```
@@ -82,12 +102,16 @@ GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID
 
 ### Component structure
 
-- `components/layout/` — `Header`, `Footer`
+- `components/layout/` — `Header` (async server component: reads menu + company data), `HeaderClient` (interactive shell: scroll state, mobile drawer), `Footer` (async server component)
 - `components/sections/` — full-page sections: `Hero`, `EditorialSection`, `ServiceGrid`, `RealizationGallery` (server), `RealizationGalleryClient` / `RealizacjeClient` (client-side filter/lightbox wrappers), `TestimonialsSection`, `QuoteSection`
+
+The server/client split is the pattern throughout: the async server component reads Keystatic and passes plain props into the `'use client'` component. Client components never import `lib/content.ts`.
+
+`RealizacjeClient` renders category filter buttons derived from the `categories` collection; only categories that actually have photos are offered. The lightbox receives the *filtered* list, so its indices stay in sync when the filter changes.
 - `components/shared/` — small reusables (`AnimatedReveal`, `PageHeader`, `SectionLabel`, `StoneArtLogo`)
 - `components/ui/` — interactive UI pieces (`QuoteForm`, `BeforeAfterSlider`, `Lightbox`, `ServiceCard`, `TestimonialCard`, `ImageUpload`)
 
-Animations use **Framer Motion** via the `AnimatedReveal` wrapper. The `clsx` + `tailwind-merge` combo is used for conditional class merging (`lib/utils.ts`). Icons come from `lucide-react`. `QuoteForm` is built with `react-hook-form` + `@hookform/resolvers/zod` (client component with file upload support via `ImageUpload`).
+Animations use **Framer Motion** via the `AnimatedReveal` wrapper. The `clsx` + `tailwind-merge` combo is used for conditional class merging (`lib/utils.ts`). Icons come from `lucide-react`. `QuoteForm` is built with `react-hook-form` + `@hookform/resolvers/zod`. It is a client component and takes all its copy (field labels, placeholders, work-type options, success and error text) as a `content` prop read from the `quoteForm` singleton by its server parent. `ImageUpload` previews use plain `<img>` with `blob:` URLs — `next/image` cannot proxy those — and revoke their object URLs on unmount.
 
 `app/opengraph-image.tsx` and `app/icon.tsx` generate the default OG image (1200×630) and favicon (32×32) programmatically via Next.js `ImageResponse`. The static `/og/default.jpg` is also served as a fallback OG image referenced in root metadata.
 
@@ -136,10 +160,14 @@ Three fonts loaded via `lib/fonts.ts` using `next/font/google`, injected as CSS 
 
 ### Analytics & Consent
 
-GTM ID (`GTM-PVJ96CRF`) is hardcoded in `app/layout.tsx` — not an env var. The layout injects a `<script id="consent-defaults">` **before** the GTM snippet that sets `analytics_storage: 'denied'` with `wait_for_update: 500ms` (Google Consent Mode v2).
+GTM ID (`GTM-PVJ96CRF`) is a constant in `lib/constants.ts` — not an env var. The layout injects a `<script id="consent-defaults">` **before** the GTM snippet that sets `analytics_storage: 'denied'` with `wait_for_update: 500ms` (Google Consent Mode v2).
 
 `components/ui/CookieBanner` is a client component that manages the `stoneart_consent` cookie (1-year, `SameSite=Lax`). On mount it reads the stored value: if `'granted'` it re-fires `gtag('consent','update',{analytics_storage:'granted'})` immediately; if absent it shows the banner. Accept/reject write the cookie and call `window.gtag` to update consent state. The banner never re-appears once a choice is stored.
 
 ### SEO
 
-`lib/schema-components.tsx` provides JSON-LD structured data (`LocalBusinessSchema`, `WebSiteSchema`, `ServiceSchema`, `BreadcrumbSchema`). `WebSiteSchema` + `LocalBusinessSchema` render once on the homepage; `ServiceSchema`/`BreadcrumbSchema` render per relevant page. `lib/schema.ts` re-exports them — always import from `lib/schema` (not `lib/schema-components`). **Do not recreate `lib/schema.tsx`:** a stale duplicate used to live there, and because webpack resolves `.tsx` *before* `.ts` (the opposite of `tsc`), the production build silently used the duplicate instead of `schema.ts`. Adding an export only to `schema-components.tsx` then broke the Vercel build (`WebSiteSchema is not exported` → `Unsupported Server Component type: undefined`) while local `tsc --noEmit` passed. The duplicate has been deleted; keep a single source in `schema-components.tsx`. (`next.config.ts.bak` is a stale backup of the now-`.mjs` config and is safe to delete.) `app/sitemap.ts` and `app/robots.ts` are auto-generated. `next.config.mjs` redirects non-www → www, the old `stoneart.tychy.pl` host → www, and `/index.php` → `/` (all 301).
+`lib/schema-components.tsx` provides JSON-LD structured data (`LocalBusinessSchema`, `WebSiteSchema`, `ServiceSchema`, `BreadcrumbSchema`). The first three are **async server components** that read company data from Keystatic, so editing the phone number or opening hours in the CMS updates the structured data too. `WebSiteSchema` + `LocalBusinessSchema` render once on the homepage; `ServiceSchema`/`BreadcrumbSchema` render per relevant page.
+
+Do **not** add `aggregateRating` markup built from the `testimonials` collection: those entries are editorial copy, not verified reviews, and Google treats self-declared review markup aggregated from third-party sources as a manual-action risk.
+
+Page metadata comes from the CMS via `generateMetadata()` on every route (and on the root layout). Per-page `metaTitle` should not repeat the brand — the root layout appends `| <companyName> <city>`. `lib/schema.ts` re-exports them — always import from `lib/schema` (not `lib/schema-components`). **Do not recreate `lib/schema.tsx`:** a stale duplicate used to live there, and because webpack resolves `.tsx` *before* `.ts` (the opposite of `tsc`), the production build silently used the duplicate instead of `schema.ts`. Adding an export only to `schema-components.tsx` then broke the Vercel build (`WebSiteSchema is not exported` → `Unsupported Server Component type: undefined`) while local `tsc --noEmit` passed. The duplicate has been deleted; keep a single source in `schema-components.tsx`. (`next.config.ts.bak` is a stale backup of the now-`.mjs` config and is safe to delete.) `app/sitemap.ts` and `app/robots.ts` are auto-generated. `next.config.mjs` redirects non-www → www, the old `stoneart.tychy.pl` host → www, and `/index.php` → `/` (all 301). It also sets the security headers, including an enforced `Content-Security-Policy: frame-ancestors 'self'` and a full candidate policy as `Content-Security-Policy-Report-Only`. Promote the report-only policy to the enforced header only after checking the browser console shows no violations with analytics and Google reviews active.

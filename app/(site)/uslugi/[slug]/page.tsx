@@ -3,9 +3,9 @@ import { notFound }       from 'next/navigation'
 import Link               from 'next/link'
 import Image              from 'next/image'
 import { Check }          from 'lucide-react'
-import { SITE } from '@/lib/constants'
-import { PHOTOS, photoSrc } from '@/lib/photos'
-import { getServices, getService, resolveImage } from '@/lib/content'
+import { SITE_URL } from '@/lib/constants'
+import { getServices, getService, getSiteSettings, getUslugiPageContent } from '@/lib/content'
+import { telHref } from '@/lib/utils'
 import { PageHeader }     from '@/components/shared/PageHeader'
 import { QuoteSection }   from '@/components/sections/QuoteSection'
 import { ServiceSchema, BreadcrumbSchema } from '@/lib/schema'
@@ -14,6 +14,10 @@ import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 interface PageProps {
   params: { slug: string }
 }
+
+export const revalidate = false
+// Slug spoza CMS → 404 zamiast prób renderowania w runtime.
+export const dynamicParams = false
 
 export async function generateStaticParams() {
   const services = await getServices()
@@ -24,34 +28,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const service = await getService(params.slug)
   if (!service) return {}
 
+  const title = service.metaTitle || `${service.title} — Tychy i Śląsk`
+  const description = service.metaDescription || service.description
+
   return {
-    title: `${service.title} — Tychy i Śląsk`,
-    description: service.description,
-    alternates: { canonical: `${SITE.url}/uslugi/${service.slug}` },
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/uslugi/${service.slug}` },
     openGraph: {
-      title: `${service.title} | StoneArt Tychy`,
-      description: service.description,
-      url: `${SITE.url}/uslugi/${service.slug}`,
+      title,
+      description,
+      url: `${SITE_URL}/uslugi/${service.slug}`,
     },
   }
 }
 
 export default async function ServicePage({ params }: PageProps) {
-  const [service, allServices] = await Promise.all([
+  const [service, allServices, site, cms] = await Promise.all([
     getService(params.slug),
     getServices(),
+    getSiteSettings(),
+    getUslugiPageContent(),
   ])
   if (!service) notFound()
 
   const related = allServices.filter((s) => s.slug !== service.slug).slice(0, 2)
 
-  const coverPhoto = service.image
-    ? resolveImage(service.image)
-    : PHOTOS[0] ? photoSrc(PHOTOS[0].file) : null
-
   return (
     <>
-      <ServiceSchema slug={service.slug} title={service.title} description={service.description} />
+      <ServiceSchema service={service} />
       <BreadcrumbSchema
         items={[
           { name: 'Usługi', href: '/uslugi' },
@@ -61,7 +66,7 @@ export default async function ServicePage({ params }: PageProps) {
 
       <div className="bg-stone-light border-b border-stone-border">
         <PageHeader
-          label={service.category ?? 'Usługi'}
+          label={service.category || cms.pageLabel}
           title={service.title}
           lead={service.description}
         />
@@ -72,11 +77,11 @@ export default async function ServicePage({ params }: PageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
             <AnimatedReveal direction="fade">
-              {coverPhoto ? (
+              {service.image ? (
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
-                    src={coverPhoto}
-                    alt={`${service.title} — StoneArt Tychy`}
+                    src={service.image}
+                    alt={`${service.title} — ${site.companyName} ${site.city}`}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover"
@@ -87,6 +92,7 @@ export default async function ServicePage({ params }: PageProps) {
                 <div
                   className="aspect-[4/3] bg-stone-dark flex items-end p-8"
                   style={{ background: 'linear-gradient(135deg, #2D2D2D 0%, #1a1a1a 100%)' }}
+                  aria-hidden="true"
                 >
                   <div className="bar-motif">
                     <div className="bar-motif__dark" />
@@ -97,36 +103,41 @@ export default async function ServicePage({ params }: PageProps) {
             </AnimatedReveal>
 
             <AnimatedReveal delay={100}>
-              <p
-                className="mb-8"
-                style={{ fontFamily: 'var(--font-body)', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-gold-dark)' }}
-              >
-                Zakres prac
-              </p>
-              <ul className="flex flex-col gap-0" role="list">
-                {(service.features ?? []).map((feature, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-4 py-4"
-                    style={{ borderBottom: '1px solid var(--color-border)' }}
+              {service.features.length > 0 && (
+                <>
+                  <p
+                    className="mb-8"
+                    style={{ fontFamily: 'var(--font-body)', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-gold-dark)' }}
                   >
-                    <div
-                      className="w-5 h-5 flex items-center justify-center shrink-0 mt-0.5"
-                      style={{ background: 'rgba(196,184,122,0.15)' }}
-                    >
-                      <Check size={11} strokeWidth={2} style={{ color: 'var(--color-gold-dark)' }} />
-                    </div>
-                    <span className="text-[16px] text-ink-secondary leading-[1.6]">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+                    {cms.detailScopeLabel}
+                  </p>
+                  <ul className="flex flex-col gap-0">
+                    {service.features.map((feature, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-4 py-4"
+                        style={{ borderBottom: '1px solid var(--color-border)' }}
+                      >
+                        <div
+                          className="w-5 h-5 flex items-center justify-center shrink-0 mt-0.5"
+                          style={{ background: 'rgba(196,184,122,0.15)' }}
+                          aria-hidden="true"
+                        >
+                          <Check size={11} strokeWidth={2} style={{ color: 'var(--color-gold-dark)' }} />
+                        </div>
+                        <span className="text-[16px] text-ink-secondary leading-[1.6]">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
 
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link href="/wycena" className="btn-primary">
-                  Zapytaj o wycenę
+                  {cms.detailCtaButton}
                 </Link>
-                <a href={`tel:+48${SITE.phone.replace(/\s/g, '')}`} className="btn-ghost flex items-center gap-2">
-                  {SITE.phone}
+                <a href={telHref(site.phone)} className="btn-ghost flex items-center gap-2">
+                  {site.phone}
                 </a>
               </div>
             </AnimatedReveal>
@@ -141,7 +152,7 @@ export default async function ServicePage({ params }: PageProps) {
               className="mb-8"
               style={{ fontFamily: 'var(--font-body)', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-text-2)' }}
             >
-              Inne usługi
+              {cms.detailRelatedLabel}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-border">
               {related.map((s) => (
@@ -158,7 +169,7 @@ export default async function ServicePage({ params }: PageProps) {
                   <span className="font-display text-[20px] text-ink" style={{ fontWeight: 400 }}>
                     {s.title}
                   </span>
-                  <span className="link-stone mt-auto">Więcej →</span>
+                  <span className="link-stone mt-auto">{cms.moreLabel}</span>
                 </Link>
               ))}
             </div>

@@ -1,0 +1,18 @@
+{
+  "pageLabel": "Kontakt",
+  "pageTitle": "Skontaktuj się z nami.",
+  "pageLead": "Pracujemy od poniedziałku do piątku, {godziny}. Odpiszemy lub oddzwonimy najszybciej jak to możliwe.",
+  "phoneLabel": "Telefon",
+  "phoneNote": "",
+  "phoneCta": "Zadzwoń teraz",
+  "emailLabel": "E-mail",
+  "emailNote": "Odpiszemy w ciągu 24 godzin",
+  "emailCta": "Napisz wiadomość",
+  "addressLabel": "Adres",
+  "addressCta": "Pokaż na mapie",
+  "bottomText": "Wolisz wypełnić formularz?",
+  "bottomButton": "Zapytaj o wycenę →",
+  "bottomHref": "/wycena",
+  "metaTitle": "Kontakt — pracownia w Tychach",
+  "metaDescription": "Skontaktuj się z pracownią StoneArt w Tychach. Liternictwo nagrobne, dopiski i renowacja nagrobków. Bezpłatna wycena."
+}

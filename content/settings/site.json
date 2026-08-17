@@ -1,9 +1,22 @@
 {
+  "companyName": "StoneArt",
+  "companyFullName": "StoneArt Usługi Kamieniarsko-Liternicze",
+  "owner": "Adam Wytrykus",
   "phone": "734 130 388",
   "email": "kontakt.stoneart@gmail.com",
   "address": "Różana 41, Tychy",
+  "street": "Różana 41",
   "postcode": "43-100",
   "city": "Tychy",
+  "region": "Śląskie",
   "hours": "Pon.–Pt. 9:00–17:00",
-  "serviceArea": "Tychy, Katowice, Mysłowice, Bieruń, Lędziny, Oświęcim i okolice"
+  "opensAt": "09:00",
+  "closesAt": "17:00",
+  "serviceArea": "Tychy, Katowice, Mysłowice, Bieruń, Lędziny, Oświęcim i okolice",
+  "latitude": "50.1276",
+  "longitude": "18.9765",
+  "googleMapsUrl": "https://maps.google.com/?q=Różana 41, 43-100 Tychy",
+  "facebookUrl": "https://www.facebook.com/profile.php?id=61578436661238",
+  "googleProfileUrl": "https://share.google/aAioXdh7wENSno8WP",
+  "description": "Liternictwo nagrobne i renowacja nagrobków w Tychach. Dopiski liter i dat, piaskowanie napisów, odnawianie tablic granitowych. Klienci i zakłady kamieniarskie."
 }

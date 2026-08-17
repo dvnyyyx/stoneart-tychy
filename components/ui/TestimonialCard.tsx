@@ -63,7 +63,7 @@ export function TestimonialCard({
           fontStyle: 'italic',
         }}
       >
-        "
+        &ldquo;
       </div>
 
       <blockquote>

@@ -1,0 +1,55 @@
+{
+  "pageLabel": "Informacje prawne",
+  "pageTitle": "Polityka Prywatności.",
+  "pageLead": "Dowiedz się, jakie dane zbieramy, w jakim celu i jakie przysługują Ci prawa.",
+  "sections": [
+    {
+      "heading": "1. Administrator danych osobowych",
+      "body": "Administratorem Twoich danych osobowych jest {wlasciciel} prowadzący działalność pod nazwą {firma}, z siedzibą przy ul. {ulica}, {kod} {miasto}.\n\nKontakt w sprawach dotyczących danych osobowych: {email}",
+      "bullets": []
+    },
+    {
+      "heading": "2. Jakie dane zbieramy i w jakim celu",
+      "body": "Formularz wyceny — gdy wypełniasz formularz wyceny na stronie /wycena, zbieramy: imię i nazwisko, numer telefonu lub adres e-mail, nazwę miejscowości lub cmentarza, opis zlecenia oraz opcjonalnie przesłane zdjęcia. Dane te są niezbędne do przygotowania oferty i kontaktu w sprawie wyceny. Podstawa prawna: art. 6 ust. 1 lit. b RODO (działanie na żądanie osoby przed zawarciem umowy).\n\nAnalityka (pliki cookie) — za Twoją zgodą używamy Google Analytics 4 do anonimowej analizy ruchu na stronie (liczba odwiedzin, strony wejścia, czas na stronie). Dane są przekazywane do Google LLC i przechowywane zgodnie z polityką prywatności Google. Podstawa prawna: art. 6 ust. 1 lit. a RODO (zgoda). Zgodę możesz wycofać w każdej chwili, klikając „Odrzuć” w banerze cookies lub czyszcząc pliki cookie w przeglądarce.",
+      "bullets": []
+    },
+    {
+      "heading": "3. Jak długo przechowujemy dane",
+      "body": "Dane z formularza wyceny przechowywane są wyłącznie w skrzynce e-mail administratora przez czas niezbędny do obsługi zapytania, nie dłużej niż 2 lata. Dane analityczne Google Analytics są przechowywane przez 14 miesięcy (domyślne ustawienie GA4).",
+      "bullets": []
+    },
+    {
+      "heading": "4. Twoje prawa",
+      "body": "Na podstawie RODO przysługuje Ci prawo do:",
+      "bullets": [
+        "dostępu do swoich danych osobowych,",
+        "sprostowania nieprawidłowych danych,",
+        "usunięcia danych („prawo do bycia zapomnianym”),",
+        "ograniczenia przetwarzania,",
+        "wycofania zgody w dowolnym momencie (bez wpływu na zgodność z prawem przetwarzania przed wycofaniem),",
+        "wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (UODO), ul. Stawki 2, 00-193 Warszawa."
+      ]
+    },
+    {
+      "heading": "5. Pliki cookie",
+      "body": "Strona używa wyłącznie plików cookie niezbędnych do działania oraz analitycznych (Google Analytics) — wyłącznie po wyrażeniu zgody. Nie używamy cookies reklamowych ani śledzących.",
+      "bullets": [
+        "stoneart_consent — niezbędne. Zapamiętuje Twoją decyzję dotyczącą cookies. Ważność: 1 rok.",
+        "_ga, _ga_* — analityczne (za zgodą). Google Analytics, anonimowe dane o ruchu na stronie. Ważność: do 2 lat."
+      ]
+    },
+    {
+      "heading": "6. Przekazywanie danych poza EOG",
+      "body": "Google Analytics przekazuje dane do Google LLC (USA). Google stosuje standardowe klauzule umowne zatwierdzone przez Komisję Europejską, co zapewnia odpowiedni poziom ochrony danych zgodny z RODO.",
+      "bullets": []
+    },
+    {
+      "heading": "7. Zmiany polityki prywatności",
+      "body": "Niniejsza polityka może być aktualizowana. Datę ostatniej zmiany znajdziesz poniżej. W przypadku istotnych zmian poinformujemy o nich na stronie głównej.",
+      "bullets": []
+    }
+  ],
+  "updatedAt": "17 sierpnia 2026",
+  "metaTitle": "Polityka Prywatności",
+  "metaDescription": "Informacje o przetwarzaniu danych osobowych przez StoneArt Adam Wytrykus zgodnie z RODO."
+}

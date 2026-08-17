@@ -1,11 +1,14 @@
-import Link from 'next/link'
-import { Phone, Mail, Clock } from 'lucide-react'
-import { SITE } from '@/lib/constants'
+import { Phone, Mail } from 'lucide-react'
+import { getQuoteFormContent, getSiteSettings } from '@/lib/content'
+import { telHref, mailHref } from '@/lib/utils'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 import { QuoteForm } from '@/components/ui/QuoteForm'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
-export function QuoteSection() {
+export async function QuoteSection() {
+  const [form, site] = await Promise.all([getQuoteFormContent(), getSiteSettings()])
+  const titleLines = form.sectionTitle.split('\n').filter(Boolean)
+
   return (
     <section
       id="wycena"
@@ -17,30 +20,28 @@ export function QuoteSection() {
 
           {/* Lewa kolumna — tekst */}
           <AnimatedReveal className="flex flex-col justify-center">
-            <SectionLabel className="mb-4">Wycena</SectionLabel>
+            <SectionLabel className="mb-4">{form.sectionLabel}</SectionLabel>
 
             <h2
               id="quote-heading"
               className="font-display text-ink leading-[1.1] mb-5"
               style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 400 }}
             >
-              Napisz do nas.<br />
-              Wycena jest<br />
-              bezpłatna.
+              {titleLines.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < titleLines.length - 1 && <br />}
+                </span>
+              ))}
             </h2>
 
             <p className="text-body-md text-ink-secondary prose-stone leading-[1.75] mb-8">
-              Opisz zakres prac —{' '}
-              <strong>liternictwo i dopiski</strong>,{' '}
-              <strong>piaskowanie napisów</strong>,{' '}
-              <strong>renowacja nagrobków</strong> — i podaj lokalizację cmentarza.
-              Możesz dołączyć zdjęcia, wycenimy szybko i bez zobowiązań.
+              {form.sectionText}
             </p>
 
-            {/* Dane kontaktowe */}
             <div className="flex flex-col gap-4">
               <a
-                href={SITE.phoneHref}
+                href={telHref(site.phone)}
                 className="group flex items-center gap-4 py-3"
                 style={{ borderBottom: '1px solid var(--color-border)' }}
               >
@@ -48,21 +49,21 @@ export function QuoteSection() {
                   className="w-10 h-10 flex items-center justify-center shrink-0"
                   style={{ background: 'rgba(196,184,122,0.12)' }}
                 >
-                  <Phone size={16} strokeWidth={1.5} style={{ color: 'var(--color-gold-dark)' }} />
+                  <Phone size={16} strokeWidth={1.5} style={{ color: 'var(--color-gold-dark)' }} aria-hidden="true" />
                 </div>
                 <div>
                   <span
                     className="block text-[17px] font-[400] text-ink group-hover:text-[#A89B58] transition-colors duration-200"
                     style={{ fontFamily: 'var(--font-body)' }}
                   >
-                    {SITE.phone}
+                    {site.phone}
                   </span>
-                  <span className="block text-[11px] text-ink-secondary mt-0.5">{SITE.hours}</span>
+                  <span className="block text-[11px] text-ink-secondary mt-0.5">{site.hours}</span>
                 </div>
               </a>
 
               <a
-                href={`mailto:${SITE.email}`}
+                href={mailHref(site.email)}
                 className="group flex items-center gap-4 py-3"
                 style={{ borderBottom: '1px solid var(--color-border)' }}
               >
@@ -70,22 +71,21 @@ export function QuoteSection() {
                   className="w-10 h-10 flex items-center justify-center shrink-0"
                   style={{ background: 'rgba(196,184,122,0.12)' }}
                 >
-                  <Mail size={16} strokeWidth={1.5} style={{ color: 'var(--color-gold-dark)' }} />
+                  <Mail size={16} strokeWidth={1.5} style={{ color: 'var(--color-gold-dark)' }} aria-hidden="true" />
                 </div>
                 <div>
                   <span
-                    className="block text-[15px] text-ink-secondary group-hover:text-ink transition-colors duration-200"
+                    className="block text-[15px] text-ink-secondary group-hover:text-ink transition-colors duration-200 break-all"
                     style={{ fontFamily: 'var(--font-body)' }}
                   >
-                    {SITE.email}
+                    {site.email}
                   </span>
-                  <span className="block text-[11px] text-ink-secondary mt-0.5">Odpiszemy w ciągu 24h</span>
+                  <span className="block text-[11px] text-ink-secondary mt-0.5">{form.emailNote}</span>
                 </div>
               </a>
             </div>
 
-            {/* Bar motif */}
-            <div className="bar-motif mt-10">
+            <div className="bar-motif mt-10" aria-hidden="true">
               <div className="bar-motif__dark" />
               <div className="bar-motif__gold" />
             </div>
@@ -97,7 +97,7 @@ export function QuoteSection() {
               className="bg-stone-white p-7 lg:p-9"
               style={{ border: '1px solid var(--color-border)' }}
             >
-              <QuoteForm />
+              <QuoteForm content={form} phone={site.phone} />
             </div>
           </AnimatedReveal>
         </div>

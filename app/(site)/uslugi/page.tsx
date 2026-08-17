@@ -1,30 +1,31 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { SITE } from '@/lib/constants'
-import { getServices } from '@/lib/content'
+import { SITE_URL } from '@/lib/constants'
+import { getServices, getUslugiPageContent } from '@/lib/content'
 import { PageHeader }   from '@/components/shared/PageHeader'
 import { BreadcrumbSchema } from '@/lib/schema'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
-export const metadata: Metadata = {
-  title: 'Usługi kamieniarsko-liternicze — Tychy i okolice',
-  description: 'Liternictwo nagrobne, dopiski liter i dat, piaskowanie napisów, renowacja nagrobków i montaż tablic. Klienci i zakłady kamieniarskie — Tychy i okolice.',
-  alternates: { canonical: `${SITE.url}/uslugi` },
+export const revalidate = false
+
+export async function generateMetadata(): Promise<Metadata> {
+  const cms = await getUslugiPageContent()
+  return {
+    title: cms.metaTitle || cms.pageTitle,
+    description: cms.metaDescription || cms.pageLead,
+    alternates: { canonical: `${SITE_URL}/uslugi` },
+  }
 }
 
 export default async function UslugiPage() {
-  const services = await getServices()
+  const [services, cms] = await Promise.all([getServices(), getUslugiPageContent()])
 
   return (
     <>
       <BreadcrumbSchema items={[{ name: 'Usługi', href: '/uslugi' }]} />
 
       <div className="bg-stone-light border-b border-stone-border">
-        <PageHeader
-          label="Usługi"
-          title="Zakres prac."
-          lead="Wykonujemy nowe napisy, dopiski liter i dat oraz odnawiamy nagrobki i tablice granitowe. Klienci indywidualni i zakłady kamieniarskie — Tychy i okolice."
-        />
+        <PageHeader label={cms.pageLabel} title={cms.pageTitle} lead={cms.pageLead} />
       </div>
 
       <section className="bg-stone-bg py-section-md">
@@ -46,12 +47,12 @@ export default async function UslugiPage() {
                   <div>
                     <h2 className="font-display text-[24px] text-ink mb-3 leading-[1.15]" style={{ fontWeight: 400 }}>
                       {service.title}
-                      {service.featured && (
+                      {service.featured && cms.featuredBadge && (
                         <span
                           className="ml-3 inline-block"
                           style={{ fontFamily: 'var(--font-body)', fontSize: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-gold)', border: '1px solid var(--color-gold)', padding: '2px 8px', verticalAlign: 'middle' }}
                         >
-                          Specjalizacja
+                          {cms.featuredBadge}
                         </span>
                       )}
                     </h2>
@@ -61,7 +62,7 @@ export default async function UslugiPage() {
                   </div>
                   <div className="hidden lg:flex items-center">
                     <span className="link-stone whitespace-nowrap group-hover:text-gold-dark transition-colors">
-                      Więcej →
+                      {cms.moreLabel}
                     </span>
                   </div>
                 </Link>
@@ -70,11 +71,9 @@ export default async function UslugiPage() {
           </div>
 
           <AnimatedReveal delay={200} className="mt-12 text-center">
-            <p className="text-[14px] text-ink-secondary mb-4">
-              Nie znalazłeś tego, czego szukasz?
-            </p>
-            <Link href="/kontakt" className="btn-primary">
-              Napisz do nas →
+            <p className="text-[14px] text-ink-secondary mb-4">{cms.ctaText}</p>
+            <Link href={cms.ctaHref} className="btn-primary">
+              {cms.ctaButton}
             </Link>
           </AnimatedReveal>
         </div>

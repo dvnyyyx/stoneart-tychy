@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
-import Image from 'next/image'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { X, Upload } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,6 +17,8 @@ interface ImageUploadProps {
   onChange: (files: File[]) => void
   maxFiles?: number
   maxSizeMB?: number
+  /** Napis w ramce upuszczania — edytowalny w CMS. */
+  dropText?: string
   error?: string
   className?: string
 }
@@ -36,6 +37,7 @@ export function ImageUpload({
   onChange,
   maxFiles = MAX_FILES,
   maxSizeMB = MAX_SIZE_MB,
+  dropText = 'Dodaj zdjęcia nagrobka',
   error,
   className,
 }: ImageUploadProps) {
@@ -43,6 +45,13 @@ export function ImageUpload({
   const [dragOver, setDragOver] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Podglądy to blob: URL — trzeba je zwolnić, inaczej wyciekają przy odmontowaniu.
+  const filesRef = useRef<UploadedFile[]>([])
+  filesRef.current = files
+  useEffect(() => () => {
+    filesRef.current.forEach((f) => URL.revokeObjectURL(f.preview))
+  }, [])
 
   const addFiles = useCallback((newFiles: FileList | null) => {
     if (!newFiles) return
@@ -145,7 +154,7 @@ export function ImageUpload({
               marginBottom: '4px',
             }}
           >
-            {dragOver ? 'Upuść pliki tutaj' : 'Dodaj zdjęcia nagrobka'}
+            {dragOver ? 'Upuść pliki tutaj' : dropText}
           </p>
           <p
             style={{
@@ -193,12 +202,11 @@ export function ImageUpload({
               className="relative group"
               style={{ aspectRatio: '1' }}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={f.preview}
                 alt={f.name}
-                fill
-                sizes="80px"
-                className="object-cover"
+                className="absolute inset-0 w-full h-full object-cover"
               />
               {/* Overlay z rozmiarem */}
               <div className="absolute inset-0 bg-stone-dark/0 group-hover:bg-stone-dark/50 transition-colors duration-200 flex items-center justify-center">

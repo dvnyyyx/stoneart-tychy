@@ -33,3 +33,7 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Materiały robocze (audyty, raporty) — nie należą do repo
+Audyt SEO*.pdf
+Raport indeksowania/

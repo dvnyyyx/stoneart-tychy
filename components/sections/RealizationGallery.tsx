@@ -1,20 +1,20 @@
-import { getFeaturedGallery, resolveImage } from '@/lib/content'
+import { getFeaturedGallery, getHomepageContent } from '@/lib/content'
 import { RealizationGalleryClient } from '@/components/sections/RealizationGalleryClient'
 
 export async function RealizationGallery() {
-  let photos: { src: string; alt: string; category?: string }[] = []
-  try {
-    const fromCMS = await getFeaturedGallery()
-    photos = fromCMS.map((p) => ({
-      src: resolveImage(p.image),
-      alt: p.alt,
-      category: p.category ?? undefined,
-    }))
-  } catch {
-    // brak zdjęć — galeria ukryta
-  }
+  const home = await getHomepageContent()
+  const photos = await getFeaturedGallery(home.galleryLimit)
 
+  // Brak zdjęć w CMS — sekcja znika zamiast pokazywać pustą siatkę.
   if (photos.length === 0) return null
 
-  return <RealizationGalleryClient photos={photos} />
+  return (
+    <RealizationGalleryClient
+      photos={photos.map((p) => ({ src: p.src, alt: p.alt, category: p.categoryName }))}
+      label={home.galleryLabel}
+      title={home.galleryTitle}
+      linkLabel={home.galleryLinkLabel}
+      note={home.galleryNote}
+    />
+  )
 }

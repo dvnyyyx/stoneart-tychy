@@ -2,7 +2,7 @@
   "title": "Renowacja nagrobków",
   "shortTitle": "Renowacja",
   "category": "Renowacja",
-  "description": "Miejsce pamięci bliskich z biegiem lat może stracić swój pierwotny wygląd. Oferujemy kompleksową renowację nagrobków i tablic granitowych, obejmującą czyszczenie kamienia, odświeżanie powierzchni oraz odnawianie napisów. Naszym celem jest przywrócenie estetyki, czytelności i godnego wyglądu pomnika, z zachowaniem najwyższej staranności i dbałości o każdy detal.\n",
+  "description": "Miejsce pamięci bliskich z biegiem lat może stracić swój pierwotny wygląd. Oferujemy kompleksową renowację nagrobków i tablic granitowych, obejmującą czyszczenie kamienia, odświeżanie powierzchni oraz odnawianie napisów. Naszym celem jest przywrócenie estetyki, czytelności i godnego wyglądu pomnika, z zachowaniem najwyższej staranności i dbałości o każdy detal.",
   "features": [
     "Czyszczenie i impregnacja kamienia naturalnego",
     "Odtwarzanie i odświeżanie istniejących napisów",
@@ -10,5 +10,8 @@
     "Wymiana uszkodzonych elementów"
   ],
   "featured": false,
-  "order": 2
+  "order": 2,
+  "image": "/images/prace/renowacja-nagrobka.jpg",
+  "metaTitle": "",
+  "metaDescription": ""
 }

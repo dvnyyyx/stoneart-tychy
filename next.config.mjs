@@ -1,3 +1,20 @@
+// Kandydat na pełną CSP — wdrażany najpierw jako Report-Only (patrz headers()).
+// GTM ładuje GA4 i Pixel dynamicznie i nie obsługuje nonce, stąd 'unsafe-inline'
+// w script-src. Wiele komponentów używa style={{…}}, stąd 'unsafe-inline' w style-src.
+const CSP_REPORT_ONLY = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  "img-src 'self' data: blob: https://lh3.googleusercontent.com https://www.google-analytics.com https://www.facebook.com",
+  "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://www.facebook.com https://vitals.vercel-insights.com",
+  "frame-src https://www.googletagmanager.com",
+  "form-action 'self'",
+].join('; ')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -32,10 +49,14 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
-          // CSP: na razie TYLKO frame-ancestors — realnie usuwa clickjacking bez
-          // ryzyka zablokowania GTM/GA4/Facebook Pixel. Pełny script-src/connect-src
-          // wymaga testów z Twoim kontenerem GTM (patrz komentarz na końcu pliku).
+          // CSP egzekwowana: na razie TYLKO frame-ancestors — realnie usuwa
+          // clickjacking bez ryzyka zablokowania GTM/GA4/Facebook Pixel.
           { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+          // Pełna CSP w trybie raportowania: nic nie blokuje, ale naruszenia
+          // pojawiają się w konsoli przeglądarki. Sprawdź stronę przy włączonej
+          // analityce i opiniach Google; gdy konsola jest czysta, przenieś tę
+          // wartość do nagłówka wyżej (i usuń stąd).
+          { key: 'Content-Security-Policy-Report-Only', value: CSP_REPORT_ONLY },
         ],
       },
     ]
@@ -67,25 +88,3 @@ const nextConfig = {
 }
 
 export default nextConfig
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PEŁNA CSP (do włączenia po testach) — kontroluje ładowanie skryptów, nie tylko
-// ramki. UWAGA: błędna dyrektywa po cichu wyłączy GTM/GA4/Facebook Pixel, więc
-// najpierw wdróż jako `Content-Security-Policy-Report-Only`, sprawdź w konsoli
-// przeglądarki brak naruszeń przy realnym ruchu (analityka, zdjęcia opinii Google),
-// dopiero potem zamień nazwę nagłówka na `Content-Security-Policy`.
-//
-//   "default-src 'self'; " +
-//   "base-uri 'self'; " +
-//   "object-src 'none'; " +
-//   "frame-ancestors 'self'; " +
-//   // GTM ładuje GA4 i Pixel dynamicznie; wymaga 'unsafe-inline' (brak nonce w GTM):
-//   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net; " +
-//   // Wiele komponentów używa style={{…}} (inline) → 'unsafe-inline' konieczne:
-//   "style-src 'self' 'unsafe-inline'; " +
-//   "font-src 'self'; " +                                  // fonty są self-hostowane (next/font)
-//   "img-src 'self' data: https://lh3.googleusercontent.com https://www.google-analytics.com https://www.facebook.com; " +
-//   "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://www.facebook.com; " +
-//   "frame-src https://www.googletagmanager.com; " +       // noscript iframe GTM
-//   "form-action 'self'"
-// ─────────────────────────────────────────────────────────────────────────────

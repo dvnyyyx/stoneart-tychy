@@ -24,10 +24,10 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
   const prev = useCallback(() => setIndex((i) => (i - 1 + images.length) % images.length), [images.length])
   const next = useCallback(() => setIndex((i) => (i + 1) % images.length), [images.length])
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setVisible(false)
     setTimeout(onClose, 300)
-  }
+  }, [onClose])
 
   // Keyboard
   useEffect(() => {
@@ -38,7 +38,7 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [prev, next])
+  }, [prev, next, handleClose])
 
   // Lock scroll
   useEffect(() => {

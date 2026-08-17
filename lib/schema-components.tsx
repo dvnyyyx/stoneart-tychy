@@ -1,41 +1,60 @@
-import { SITE } from './constants'
+import { SITE_URL, OG_IMAGE, LOGO_PATH } from './constants'
+import { getSiteSettings } from './content'
+import { telHref } from './utils'
+import type { ServiceEntry } from './content'
 
-// Schema.org LocalBusiness — komponent React renderujący JSON-LD
-export function LocalBusinessSchema() {
-  const schema = {
+// JSON-LD dla Google. Wszystkie dane firmowe pochodzą z Keystatica
+// (content/settings/site.json), więc zmiana telefonu czy godzin w CMS
+// aktualizuje też dane strukturalne — bez dotykania kodu.
+
+function JsonLd({ schema }: { schema: Record<string, unknown> }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+export async function LocalBusinessSchema() {
+  const site = await getSiteSettings()
+
+  const sameAs = [site.googleProfileUrl, site.facebookUrl].filter(
+    (url): url is string => Boolean(url)
+  )
+
+  const latitude = Number.parseFloat(site.latitude)
+  const longitude = Number.parseFloat(site.longitude)
+
+  const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    '@id': `${SITE.url}/#business`,
-    name: SITE.fullName,
-    alternateName: SITE.name,
-    description: SITE.description,
-    url: SITE.url,
-    telephone: `+48${SITE.phone.replace(/\s/g, '')}`,
-    email: SITE.email,
+    '@id': `${SITE_URL}/#business`,
+    name: site.companyFullName,
+    alternateName: site.companyName,
+    description: site.description,
+    url: SITE_URL,
+    telephone: telHref(site.phone).replace('tel:', ''),
+    email: site.email,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Różana 41',
-      addressLocality: SITE.city,
-      postalCode: SITE.postcode,
-      addressRegion: SITE.region,
-      addressCountry: SITE.country,
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: 50.1276,
-      longitude: 18.9765,
+      streetAddress: site.street,
+      addressLocality: site.city,
+      postalCode: site.postcode,
+      addressRegion: site.region,
+      addressCountry: 'PL',
     },
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
         dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '09:00',
-        closes: '17:00',
+        opens: site.opensAt,
+        closes: site.closesAt,
       },
     ],
     areaServed: {
       '@type': 'State',
-      name: 'województwo śląskie',
+      name: `województwo ${site.region.toLowerCase()}`,
     },
     knowsAbout: [
       'Piaskowanie liter na nagrobkach',
@@ -44,80 +63,64 @@ export function LocalBusinessSchema() {
       'Montaż tablic nagrobnych',
     ],
     priceRange: '$$',
-    image: `${SITE.url}/og/default.jpg`,
-    logo: `${SITE.url}/logo/LOGOX.svg`,
-    sameAs: [
-      'https://share.google/aAioXdh7wENSno8WP', // wizytówka Google
-      'https://www.facebook.com/profile.php?id=61578436661238', // Facebook
-    ],
+    image: `${SITE_URL}${OG_IMAGE}`,
+    logo: `${SITE_URL}${LOGO_PATH}`,
   }
 
+  if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+    schema.geo = { '@type': 'GeoCoordinates', latitude, longitude }
+  }
+  if (sameAs.length > 0) schema.sameAs = sameAs
+
+  return <JsonLd schema={schema} />
+}
+
+export async function WebSiteSchema() {
+  const site = await getSiteSettings()
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    <JsonLd
+      schema={{
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}/#website`,
+        name: site.companyFullName,
+        alternateName: site.companyName,
+        url: SITE_URL,
+        inLanguage: 'pl-PL',
+        publisher: { '@id': `${SITE_URL}/#business` },
+      }}
     />
   )
 }
 
-// Schema.org WebSite — encja witryny (renderować raz, np. na stronie głównej)
-export function WebSiteSchema() {
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    '@id': `${SITE.url}/#website`,
-    name: SITE.fullName,
-    alternateName: SITE.name,
-    url: SITE.url,
-    inLanguage: 'pl-PL',
-    publisher: { '@id': `${SITE.url}/#business` },
-  }
+export async function ServiceSchema({ service }: { service: ServiceEntry }) {
+  const site = await getSiteSettings()
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  )
-}
-
-export function ServiceSchema({
-  slug,
-  title,
-  description,
-}: {
-  slug: string
-  title: string
-  description: string
-}) {
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: title,
-    description: description,
-    provider: {
-      '@type': 'LocalBusiness',
-      name: SITE.fullName,
-      '@id': `${SITE.url}/#business`,
-    },
-    serviceType: title,
-    areaServed: [
-      { '@type': 'City', name: 'Tychy' },
-      { '@type': 'City', name: 'Katowice' },
-      { '@type': 'AdministrativeArea', name: 'województwo śląskie' },
-    ],
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'PLN',
-      availability: 'https://schema.org/InStock',
-    },
-    url: `${SITE.url}/uslugi/${slug}`,
-  }
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    <JsonLd
+      schema={{
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: service.title,
+        description: service.description,
+        provider: {
+          '@type': 'LocalBusiness',
+          name: site.companyFullName,
+          '@id': `${SITE_URL}/#business`,
+        },
+        serviceType: service.title,
+        areaServed: [
+          { '@type': 'City', name: site.city },
+          { '@type': 'AdministrativeArea', name: `województwo ${site.region.toLowerCase()}` },
+        ],
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'PLN',
+          availability: 'https://schema.org/InStock',
+        },
+        url: `${SITE_URL}/uslugi/${service.slug}`,
+      }}
     />
   )
 }
@@ -127,29 +130,21 @@ export function BreadcrumbSchema({
 }: {
   items: Array<{ name: string; href: string }>
 }) {
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Strona główna',
-        item: SITE.url,
-      },
-      ...items.map((item, i) => ({
-        '@type': 'ListItem',
-        position: i + 2,
-        name: item.name,
-        item: `${SITE.url}${item.href}`,
-      })),
-    ],
-  }
-
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    <JsonLd
+      schema={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Strona główna', item: SITE_URL },
+          ...items.map((item, i) => ({
+            '@type': 'ListItem',
+            position: i + 2,
+            name: item.name,
+            item: `${SITE_URL}${item.href}`,
+          })),
+        ],
+      }}
     />
   )
 }

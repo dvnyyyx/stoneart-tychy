@@ -10,6 +10,10 @@ interface ServiceCardProps {
   description: string
   featured?: boolean
   image?: string
+  /** Napis na dole karty wyróżnionej — edytowalny w CMS. */
+  ctaLabel?: string
+  /** Napis odnośnika na karcie zwykłej. */
+  moreLabel?: string
   className?: string
 }
 
@@ -20,6 +24,8 @@ export function ServiceCard({
   description,
   featured = false,
   image,
+  ctaLabel = 'Zapytaj o wycenę →',
+  moreLabel = 'Więcej →',
   className,
 }: ServiceCardProps) {
   if (featured) {
@@ -88,7 +94,7 @@ export function ServiceCard({
             className="text-[9px] tracking-[0.12em] uppercase transition-colors duration-200"
             style={{ color: 'var(--color-gold)' }}
           >
-            Zapytaj o wycenę →
+            {ctaLabel}
           </span>
         </div>
 
@@ -127,7 +133,7 @@ export function ServiceCard({
       </p>
 
       <span className="link-stone mt-2 self-start">
-        Więcej →
+        {moreLabel}
       </span>
     </Link>
   )

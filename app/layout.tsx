@@ -1,60 +1,65 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { playfair, inter, cormorant } from '@/lib/fonts'
-import { SITE } from '@/lib/constants'
+import { SITE_URL, GTM_ID, OG_IMAGE, LOGO_PATH } from '@/lib/constants'
+import { getSiteSettings } from '@/lib/content'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieBanner } from '@/components/ui/CookieBanner'
 import './globals.css'
 
-const GTM_ID = 'GTM-PVJ96CRF'
+// Metadane czytane z Keystatica — zmiana nazwy firmy czy opisu w CMS
+// aktualizuje tytuły, OG i Twitter Card na całej stronie.
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSiteSettings()
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: {
-    default: `${SITE.name} — Usługi Kamieniarsko-Liternicze Tychy`,
-    template: `%s | ${SITE.name} Tychy`,
-  },
-  description: SITE.description,
-  authors: [{ name: SITE.owner }],
-  creator: SITE.owner,
-  openGraph: {
-    type: 'website',
-    locale: 'pl_PL',
-    url: SITE.url,
-    siteName: SITE.fullName,
-    title: `${SITE.name} — Liternictwo nagrobne, dopiski i renowacja nagrobków, Tychy`,
-    description: SITE.description,
-    images: [
-      {
-        url: '/og/default.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'StoneArt — Usługi Kamieniarsko-Liternicze Tychy',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${SITE.name} — Liternictwo nagrobne i renowacja nagrobków, Tychy`,
-    description: SITE.description,
-    images: ['/og/default.jpg'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: `${site.companyName} — Usługi Kamieniarsko-Liternicze ${site.city}`,
+      template: `%s | ${site.companyName} ${site.city}`,
+    },
+    description: site.description,
+    authors: [{ name: site.owner }],
+    creator: site.owner,
+    openGraph: {
+      type: 'website',
+      locale: 'pl_PL',
+      url: SITE_URL,
+      siteName: site.companyFullName,
+      title: `${site.companyName} — Liternictwo nagrobne, dopiski i renowacja nagrobków, ${site.city}`,
+      description: site.description,
+      images: [
+        {
+          url: OG_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: `${site.companyFullName} ${site.city}`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${site.companyName} — Liternictwo nagrobne i renowacja nagrobków, ${site.city}`,
+      description: site.description,
+      images: [OG_IMAGE],
+    },
+    robots: {
       index: true,
       follow: true,
-      'max-image-preview': 'large',
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+      },
     },
-  },
-  icons: {
-    icon: [
-      { url: '/logo/LOGOX.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico' },
-    ],
-    apple: '/apple-touch-icon.png',
-  },
+    icons: {
+      icon: [
+        { url: LOGO_PATH, type: 'image/svg+xml' },
+        { url: '/favicon.ico' },
+      ],
+      apple: '/apple-touch-icon.png',
+    },
+  }
 }
 
 export const viewport: Viewport = {
@@ -84,6 +89,7 @@ export default function RootLayout({
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
+            title="Google Tag Manager"
           />
         </noscript>
         {children}
