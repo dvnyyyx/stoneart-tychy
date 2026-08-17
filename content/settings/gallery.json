@@ -35,6 +35,12 @@
       "alt": "Realizacja tabliczki imiennej",
       "category": "liternictwo",
       "featured": true
+    },
+    {
+      "image": "/images/prace/photos/6/image.jpg",
+      "alt": "jas",
+      "category": "renowacja",
+      "featured": false
     }
   ]
 }
