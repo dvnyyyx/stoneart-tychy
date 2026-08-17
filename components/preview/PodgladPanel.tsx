@@ -17,16 +17,17 @@ const SZEROKOSCI: Record<Szerokosc, { px: number | null; label: string; icon: ty
   mobile: { px: 390, label: 'Telefon', icon: Smartphone },
 }
 
-// Co ile odpytujemy GitHuba o nową wersję treści. 5 s to kompromis: klient widzi
-// zmianę niemal od razu, a bez tokenu mieścimy się w limicie 60 zapytań/h tylko
-// przy krótkich sesjach — dlatego odpytujemy WYŁĄCZNIE gdy karta jest widoczna.
-const INTERWAL_MS = 5000
+// Co ile sprawdzamy, czy treść się zmieniła. Endpoint używa warunkowych zapytań
+// (ETag), więc niezmieniona treść nie zużywa limitu GitHuba. Odpytujemy wyłącznie
+// gdy karta jest widoczna.
+const INTERWAL_MS = 8000
 
 export function PodgladPanel({ strony }: { strony: Strona[] }) {
   const [sciezka, setSciezka] = useState('/')
   const [szerokosc, setSzerokosc] = useState<Szerokosc>('desktop')
   const [sha, setSha] = useState<string | null>(null)
-  const [status, setStatus] = useState<'start' | 'aktualne' | 'odswiezam' | 'blad'>('start')
+  const [status, setStatus] = useState<'start' | 'aktualne' | 'odswiezam' | 'limit' | 'blad'>('start')
+  const [komunikat, setKomunikat] = useState<string | null>(null)
   const [ostatnia, setOstatnia] = useState<string | null>(null)
   const [licznik, setLicznik] = useState(0)
 
@@ -44,9 +45,34 @@ export function PodgladPanel({ strony }: { strony: Strona[] }) {
       if (document.visibilityState !== 'visible') return
       try {
         const res = await fetch('/api/podglad-wersja', { cache: 'no-store' })
-        if (!res.ok) throw new Error(String(res.status))
-        const dane = (await res.json()) as { sha: string; message: string; date: string | null }
+        const dane = (await res.json()) as {
+          sha?: string
+          message?: string
+          date?: string | null
+          rateLimited?: boolean
+          hasToken?: boolean
+          error?: string
+        }
         if (anulowane) return
+
+        if (res.status === 429 || dane.error === 'rate_limit') {
+          setStatus('limit')
+          setKomunikat(
+            'Przekroczony limit zapytań do GitHuba. Ustaw GITHUB_TOKEN w zmiennych środowiskowych Vercela.'
+          )
+          return
+        }
+        if (!res.ok || !dane.sha) throw new Error(dane.error || String(res.status))
+        if (dane.rateLimited) {
+          setStatus('limit')
+          setKomunikat('Limit zapytań do GitHuba wyczerpany — pokazuję ostatni znany stan.')
+          return
+        }
+        setKomunikat(
+          dane.hasToken === false
+            ? 'Brak GITHUB_TOKEN. Podgląd działa w trybie oszczędnym (sprawdzanie co 60 s), ale limit GitHuba (60 zapytań/h) wyczerpie się po kilku odświeżeniach. Dodaj token w ustawieniach Vercela — wystarczy odczyt publicznych repozytoriów.'
+            : null
+        )
 
         if (shaRef.current === null) {
           shaRef.current = dane.sha
@@ -55,7 +81,7 @@ export function PodgladPanel({ strony }: { strony: Strona[] }) {
         } else if (dane.sha !== shaRef.current) {
           shaRef.current = dane.sha
           setSha(dane.sha)
-          setOstatnia(dane.message.split('\n')[0] || null)
+          setOstatnia((dane.message ?? '').split('\n')[0] || null)
           setStatus('odswiezam')
           przeladuj()
           setTimeout(() => !anulowane && setStatus('aktualne'), 1500)
@@ -82,6 +108,7 @@ export function PodgladPanel({ strony }: { strony: Strona[] }) {
     start: 'Łączę z repozytorium…',
     aktualne: sha ? `Treść aktualna · ${sha.slice(0, 7)}` : 'Treść aktualna',
     odswiezam: 'Wykryto zapis — odświeżam podgląd…',
+    limit: 'Limit zapytań GitHuba',
     blad: 'Nie mogę sprawdzić wersji treści',
   }[status]
 
@@ -89,6 +116,7 @@ export function PodgladPanel({ strony }: { strony: Strona[] }) {
     start: 'rgba(255,255,255,0.4)',
     aktualne: '#7FB069',
     odswiezam: '#C4B87A',
+    limit: '#D08C3C',
     blad: '#B85C5C',
   }[status]
 
@@ -168,6 +196,16 @@ export function PodgladPanel({ strony }: { strony: Strona[] }) {
           </a>
         </div>
       </header>
+
+      {komunikat && (
+        <div
+          className="shrink-0 px-4 py-2 text-[12px] border-b"
+          style={{ background: 'rgba(208,140,60,0.12)', borderColor: 'rgba(208,140,60,0.3)', color: '#E0A860' }}
+          role="alert"
+        >
+          {komunikat}
+        </div>
+      )}
 
       {ostatnia && (
         <div className="shrink-0 px-4 py-1.5 text-[11px] text-white/40 border-b border-white/5 truncate">

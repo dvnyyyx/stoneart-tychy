@@ -114,6 +114,14 @@ Required env vars for Keystatic GitHub OAuth (CMS admin panel):
 KEYSTATIC_GITHUB_CLIENT_ID, KEYSTATIC_GITHUB_CLIENT_SECRET, KEYSTATIC_SECRET
 ```
 
+**Required for the `/podglad` live preview:**
+```
+GITHUB_TOKEN   # read-only access to public repositories
+```
+Without it the preview still works but shares the unauthenticated GitHub limit of 60 requests/hour, which one or two preview reloads exhaust — the `createGitHubReader` content reads cost a dozen-plus API calls per render. `/api/podglad-wersja` throttles itself to one upstream call per 60 s without a token (5 s with one) and the panel shows a warning banner. ETag conditional requests are sent but do **not** help: measured against the live API, 304 responses still count against the primary rate limit.
+
+`PREVIEW_BRANCH` (optional) points the preview at a branch other than `main`.
+
 Optional env vars for live Google reviews (`lib/reviews.ts`):
 ```
 GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID
