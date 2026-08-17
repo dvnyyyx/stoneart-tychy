@@ -56,33 +56,13 @@ Every visible string, link, label and image on the site comes from one of these.
 
 **The gallery is a collection, not a singleton array.** It used to be `galleryData` — a single JSON holding every photo — so adding one photo rewrote the whole list and could clobber entries written concurrently. One file per photo removes that class of conflict. Gallery `category` is a `fields.relationship` pointing at the `categories` collection, so the client adds filter categories in the CMS without a code change.
 
-### Live preview (`/podglad`)
-
-`/podglad` is a split-screen tool for the client: the Keystatic panel on the left, the rendered site on the right. It polls `/api/podglad-wersja` (which returns the head commit SHA of the preview branch) every 5 s while the tab is visible, and reloads the right-hand iframe when the SHA changes — i.e. the moment a CMS save lands as a commit.
-
-The preview pane renders **the same page components** as the public site, but fed by a different reader:
-
-- `lib/content-api.ts` — `createContentApi(reader, source, imageBaseUrl)` builds the whole content API around any reader.
-- `lib/content.ts` — binds it to the filesystem reader. This is what public pages use, and why they stay 100% static.
-- `lib/content-preview.ts` — binds it to `createGitHubReader` against the `main` branch, so it shows content seconds after save, without waiting for a Vercel rebuild.
-
-`app/podglad/strona/[[...sciezka]]/page.tsx` is `force-dynamic` and dispatches the path to the right page component from `components/pages/`. **Page bodies live in `components/pages/`, not in the route files** — Next.js rejects extra props on route components (`PageProps` constraint), so the route files are thin wrappers that only own `metadata`, `revalidate` and `generateStaticParams`.
-
-Preview images resolve to `raw.githubusercontent.com/...` (allowed in `next.config.mjs` `remotePatterns`). Without this, a photo the client just uploaded would 404 in preview: the file is committed to the repo, but this deployment's `public/` only knows the state at build time.
-
-`previewUrl` on every collection and singleton points at `/podglad/strona/...`, so the CMS "Preview" button also shows fresh content rather than the last deploy.
-
-`components/shared/AnalyticsGate.tsx` suppresses Vercel Analytics and the cookie banner on `/podglad` and `/keystatic`, and the GTM snippet in `app/layout.tsx` is wrapped in a pathname check for the same reason — internal tooling must not pollute the client's statistics.
-
 ### Content defaults
 
-`lib/defaults.ts` holds a typed default object for every singleton (`SITE_DEFAULTS`, `HOMEPAGE_DEFAULTS`, …) mirroring the seeded JSON. `lib/content-api.ts` wraps the Keystatic reader with `readSingleton()`, which **never throws and never returns null**: a failed read logs and returns the defaults, and `withDefaults()` merges per field, treating `null`, `''` and `[]` as "not set". Pages therefore consume a complete object and carry no fallback logic of their own.
+`lib/defaults.ts` holds a typed default object for every singleton (`SITE_DEFAULTS`, `HOMEPAGE_DEFAULTS`, …) mirroring the seeded JSON. `lib/content.ts` wraps the Keystatic reader with `readSingleton()`, which **never throws and never returns null**: a failed read logs and returns the defaults, and `withDefaults()` merges per field, treating `null`, `''` and `[]` as "not set". Pages therefore consume a complete object and carry no fallback logic of their own.
 
 This is deliberate: fallbacks used to be inlined per page, which meant an empty CMS read rendered a plausible-looking page and hid the failure. Now a failed read is logged once, in one place (`[content] …` in build output).
 
 Collection getters (`getServices`, `getTestimonials`, `getGallery`, `getCategories`) return typed, sorted arrays and `[]` on failure. `getGallery()` drops entries with no image so `<Image src="">` can never be rendered.
-
-Use `api.image(value)` rather than the bare `resolveImage()` when resolving a CMS image path in a component — only the API-bound version knows whether to serve from `public/` or from raw GitHub.
 
 `next.config.mjs` sets `outputFileTracingIncludes: { '/*': ['./content/**/*'] }` so Vercel's file-tracing bundles the `content/` JSON files into the serverless deployment — without this, the Keystatic reader would find no files at runtime.
 
@@ -114,14 +94,6 @@ Required env vars for Keystatic GitHub OAuth (CMS admin panel):
 KEYSTATIC_GITHUB_CLIENT_ID, KEYSTATIC_GITHUB_CLIENT_SECRET, KEYSTATIC_SECRET
 ```
 
-**Required for the `/podglad` live preview:**
-```
-GITHUB_TOKEN   # read-only access to public repositories
-```
-Without it the preview still works but shares the unauthenticated GitHub limit of 60 requests/hour, which one or two preview reloads exhaust — the `createGitHubReader` content reads cost a dozen-plus API calls per render. `/api/podglad-wersja` throttles itself to one upstream call per 60 s without a token (5 s with one) and the panel shows a warning banner. ETag conditional requests are sent but do **not** help: measured against the live API, 304 responses still count against the primary rate limit.
-
-`PREVIEW_BRANCH` (optional) points the preview at a branch other than `main`.
-
 Optional env vars for live Google reviews (`lib/reviews.ts`):
 ```
 GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID
@@ -136,9 +108,7 @@ GOOGLE_PLACES_API_KEY, GOOGLE_PLACE_ID
 The server/client split is the pattern throughout: the async server component reads Keystatic and passes plain props into the `'use client'` component. Client components never import `lib/content.ts`.
 
 `RealizacjeClient` renders category filter buttons derived from the `categories` collection; only categories that actually have photos are offered. The lightbox receives the *filtered* list, so its indices stay in sync when the filter changes.
-- `components/pages/` — the body of each public page, taking an optional `api` prop; shared by the real route and by `/podglad`
-- `components/preview/` — `PodgladPanel`, the split-screen preview shell
-- `components/shared/` — small reusables (`AnimatedReveal`, `PageHeader`, `SectionLabel`, `StoneArtLogo`, `AnalyticsGate`)
+- `components/shared/` — small reusables (`AnimatedReveal`, `PageHeader`, `SectionLabel`, `StoneArtLogo`)
 - `components/ui/` — interactive UI pieces (`QuoteForm`, `BeforeAfterSlider`, `Lightbox`, `ServiceCard`, `TestimonialCard`, `ImageUpload`)
 
 Animations use **Framer Motion** via the `AnimatedReveal` wrapper. The `clsx` + `tailwind-merge` combo is used for conditional class merging (`lib/utils.ts`). Icons come from `lucide-react`. `QuoteForm` is built with `react-hook-form` + `@hookform/resolvers/zod`. It is a client component and takes all its copy (field labels, placeholders, work-type options, success and error text) as a `content` prop read from the `quoteForm` singleton by its server parent. `ImageUpload` previews use plain `<img>` with `blob:` URLs — `next/image` cannot proxy those — and revoke their object URLs on unmount.

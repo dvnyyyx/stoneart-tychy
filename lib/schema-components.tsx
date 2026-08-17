@@ -1,7 +1,7 @@
 import { SITE_URL, OG_IMAGE, LOGO_PATH } from './constants'
-import { contentApi } from './content'
+import { getSiteSettings } from './content'
 import { telHref } from './utils'
-import type { ContentApi, ServiceEntry } from './content'
+import type { ServiceEntry } from './content'
 
 // JSON-LD dla Google. Wszystkie dane firmowe pochodzą z Keystatica
 // (content/settings/site.json), więc zmiana telefonu czy godzin w CMS
@@ -16,8 +16,8 @@ function JsonLd({ schema }: { schema: Record<string, unknown> }) {
   )
 }
 
-export async function LocalBusinessSchema({ api = contentApi }: { api?: ContentApi } = {}) {
-  const site = await api.getSiteSettings()
+export async function LocalBusinessSchema() {
+  const site = await getSiteSettings()
 
   const sameAs = [site.googleProfileUrl, site.facebookUrl].filter(
     (url): url is string => Boolean(url)
@@ -75,8 +75,8 @@ export async function LocalBusinessSchema({ api = contentApi }: { api?: ContentA
   return <JsonLd schema={schema} />
 }
 
-export async function WebSiteSchema({ api = contentApi }: { api?: ContentApi } = {}) {
-  const site = await api.getSiteSettings()
+export async function WebSiteSchema() {
+  const site = await getSiteSettings()
 
   return (
     <JsonLd
@@ -94,14 +94,8 @@ export async function WebSiteSchema({ api = contentApi }: { api?: ContentApi } =
   )
 }
 
-export async function ServiceSchema({
-  service,
-  api = contentApi,
-}: {
-  service: ServiceEntry
-  api?: ContentApi
-}) {
-  const site = await api.getSiteSettings()
+export async function ServiceSchema({ service }: { service: ServiceEntry }) {
+  const site = await getSiteSettings()
 
   return (
     <JsonLd

@@ -1,15 +1,15 @@
 import Link from 'next/link'
 import { Phone, Mail, MapPin } from 'lucide-react'
-import { contentApi, type ContentApi } from '@/lib/content'
+import { getFooterContent, getServices, getSiteSettings } from '@/lib/content'
 import { telHref, mailHref, toParagraphs } from '@/lib/utils'
 import { StoneArtLogo } from '@/components/shared/StoneArtLogo'
 
-export async function Footer({ api = contentApi }: { api?: ContentApi } = {}) {
+export async function Footer() {
   const year = new Date().getFullYear()
   const [footer, site, services] = await Promise.all([
-    api.getFooterContent(),
-    api.getSiteSettings(),
-    api.getServices(),
+    getFooterContent(),
+    getSiteSettings(),
+    getServices(),
   ])
 
   return (

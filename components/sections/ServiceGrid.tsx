@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { contentApi, type ContentApi } from '@/lib/content'
+import { getHomepageContent, getServices } from '@/lib/content'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 import { ServiceCard } from '@/components/ui/ServiceCard'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
-export async function ServiceGrid({ api = contentApi }: { api?: ContentApi } = {}) {
-  const [services, home] = await Promise.all([api.getServices(), api.getHomepageContent()])
+export async function ServiceGrid() {
+  const [services, home] = await Promise.all([getServices(), getHomepageContent()])
 
   const featured = services.find((s) => s.featured) ?? services[0]
   if (!featured) return null
