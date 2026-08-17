@@ -1,15 +1,15 @@
 import Link from 'next/link'
-import { getFeaturedTestimonials, getHomepageContent } from '@/lib/content'
+import { contentApi, type ContentApi } from '@/lib/content'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 import { ReviewsList, type Review } from '@/components/ui/ReviewsList'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
-export async function TestimonialsSection() {
+export async function TestimonialsSection({ api = contentApi }: { api?: ContentApi } = {}) {
   // Bazowe opinie renderowane serwerowo (z CMS). Świeże opinie Google dociąga
   // ReviewsList po stronie klienta z /api/reviews — strona główna zostaje statyczna.
   const [testimonials, home] = await Promise.all([
-    getFeaturedTestimonials(3),
-    getHomepageContent(),
+    api.getFeaturedTestimonials(3),
+    api.getHomepageContent(),
   ])
 
   const initial: Review[] = testimonials.map((t) => ({

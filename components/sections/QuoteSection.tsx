@@ -1,12 +1,12 @@
 import { Phone, Mail } from 'lucide-react'
-import { getQuoteFormContent, getSiteSettings } from '@/lib/content'
+import { contentApi, type ContentApi } from '@/lib/content'
 import { telHref, mailHref } from '@/lib/utils'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 import { QuoteForm } from '@/components/ui/QuoteForm'
 import { AnimatedReveal } from '@/components/shared/AnimatedReveal'
 
-export async function QuoteSection() {
-  const [form, site] = await Promise.all([getQuoteFormContent(), getSiteSettings()])
+export async function QuoteSection({ api = contentApi }: { api?: ContentApi } = {}) {
+  const [form, site] = await Promise.all([api.getQuoteFormContent(), api.getSiteSettings()])
   const titleLines = form.sectionTitle.split('\n').filter(Boolean)
 
   return (

@@ -70,7 +70,7 @@ export default config({
       slugField: 'name',
       path: 'content/categories/*',
       format: { data: 'json' },
-      previewUrl: '/realizacje',
+      previewUrl: '/podglad/strona/realizacje',
       columns: ['name', 'order'],
       schema: {
         name: fields.slug({
@@ -97,7 +97,7 @@ export default config({
       slugField: 'alt',
       path: 'content/gallery/*',
       format: { data: 'json' },
-      previewUrl: '/realizacje',
+      previewUrl: '/podglad/strona/realizacje',
       columns: ['alt', 'order'],
       schema: {
         alt: fields.slug({
@@ -129,7 +129,7 @@ export default config({
       slugField: 'author',
       path: 'content/testimonials/*',
       format: { data: 'json' },
-      previewUrl: '/opinie',
+      previewUrl: '/podglad/strona/opinie',
       columns: ['author', 'location'],
       schema: {
         author: fields.slug({
@@ -178,7 +178,7 @@ export default config({
       slugField: 'title',
       path: 'content/services/*',
       format: { data: 'json' },
-      previewUrl: '/uslugi/{slug}',
+      previewUrl: '/podglad/strona/uslugi/{slug}',
       columns: ['title', 'category'],
       schema: {
         title: fields.slug({
@@ -226,7 +226,7 @@ export default config({
       label: 'Strona główna — Hero (nagłówek)',
       path: 'content/settings/hero',
       format: { data: 'json' },
-      previewUrl: '/',
+      previewUrl: '/podglad/strona',
       schema: {
         label: fields.text({
           label: 'Etykieta nad tytułem',
@@ -252,7 +252,7 @@ export default config({
       label: 'Strona główna — sekcje',
       path: 'content/settings/homepage',
       format: { data: 'json' },
-      previewUrl: '/',
+      previewUrl: '/podglad/strona',
       schema: {
         aboutLabel: fields.text({ label: 'Sekcja „O pracowni” — etykieta', defaultValue: 'O pracowni' }),
         aboutTitle: fields.text({ label: 'Sekcja „O pracowni” — tytuł', defaultValue: 'Precyzja i dbałość o szczegóły.', validation: { isRequired: true } }),
@@ -299,7 +299,7 @@ export default config({
       label: 'Strona — O pracowni',
       path: 'content/settings/o-nas',
       format: { data: 'json' },
-      previewUrl: '/o-nas',
+      previewUrl: '/podglad/strona/o-nas',
       schema: {
         pageLabel: fields.text({ label: 'Nagłówek — etykieta', defaultValue: 'O pracowni' }),
         pageTitle: fields.text({ label: 'Nagłówek — tytuł', defaultValue: 'StoneArt — Tychy.', validation: { isRequired: true } }),
@@ -329,7 +329,7 @@ export default config({
       label: 'Strona — Usługi (teksty)',
       path: 'content/settings/uslugi-page',
       format: { data: 'json' },
-      previewUrl: '/uslugi',
+      previewUrl: '/podglad/strona/uslugi',
       schema: {
         pageLabel: fields.text({ label: 'Nagłówek — etykieta', defaultValue: 'Usługi' }),
         pageTitle: fields.text({ label: 'Nagłówek — tytuł', defaultValue: 'Zakres prac.', validation: { isRequired: true } }),
@@ -350,7 +350,7 @@ export default config({
       label: 'Strona — Realizacje (teksty)',
       path: 'content/settings/realizacje-page',
       format: { data: 'json' },
-      previewUrl: '/realizacje',
+      previewUrl: '/podglad/strona/realizacje',
       schema: {
         pageLabel: fields.text({ label: 'Nagłówek — etykieta', defaultValue: 'Realizacje' }),
         pageTitle: fields.text({ label: 'Nagłówek — tytuł', defaultValue: 'Wybrane prace.', validation: { isRequired: true } }),
@@ -368,7 +368,7 @@ export default config({
       label: 'Strona — Opinie (teksty)',
       path: 'content/settings/opinie-page',
       format: { data: 'json' },
-      previewUrl: '/opinie',
+      previewUrl: '/podglad/strona/opinie',
       schema: {
         pageLabel: fields.text({ label: 'Nagłówek — etykieta', defaultValue: 'Opinie klientów' }),
         pageTitle: fields.text({ label: 'Nagłówek — tytuł', defaultValue: 'Co mówią nasi klienci.', validation: { isRequired: true } }),
@@ -387,7 +387,7 @@ export default config({
       label: 'Strona — Kontakt (teksty)',
       path: 'content/settings/kontakt-page',
       format: { data: 'json' },
-      previewUrl: '/kontakt',
+      previewUrl: '/podglad/strona/kontakt',
       schema: {
         pageLabel: fields.text({ label: 'Nagłówek — etykieta', defaultValue: 'Kontakt' }),
         pageTitle: fields.text({ label: 'Nagłówek — tytuł', defaultValue: 'Skontaktuj się z nami.', validation: { isRequired: true } }),
@@ -415,7 +415,7 @@ export default config({
       label: 'Strona — Wycena (teksty)',
       path: 'content/settings/wycena-page',
       format: { data: 'json' },
-      previewUrl: '/wycena',
+      previewUrl: '/podglad/strona/wycena',
       schema: {
         pageLabel: fields.text({ label: 'Nagłówek — etykieta', defaultValue: 'Wycena' }),
         pageTitle: fields.text({ label: 'Nagłówek — tytuł', defaultValue: 'Zapytaj o wycenę.', validation: { isRequired: true } }),
@@ -434,7 +434,7 @@ export default config({
       label: 'Strona — Polityka prywatności',
       path: 'content/settings/privacy-page',
       format: { data: 'json' },
-      previewUrl: '/polityka-prywatnosci',
+      previewUrl: '/podglad/strona/polityka-prywatnosci',
       schema: {
         pageLabel: fields.text({ label: 'Nagłówek — etykieta', defaultValue: 'Informacje prawne' }),
         pageTitle: fields.text({ label: 'Nagłówek — tytuł', defaultValue: 'Polityka Prywatności.', validation: { isRequired: true } }),
@@ -470,7 +470,7 @@ export default config({
       label: 'Formularz wyceny',
       path: 'content/settings/quote-form',
       format: { data: 'json' },
-      previewUrl: '/wycena',
+      previewUrl: '/podglad/strona/wycena',
       schema: {
         sectionLabel: fields.text({ label: 'Sekcja na podstronach — etykieta', defaultValue: 'Wycena' }),
         sectionTitle: fields.text({
@@ -521,7 +521,7 @@ export default config({
       label: 'Menu górne',
       path: 'content/settings/navigation',
       format: { data: 'json' },
-      previewUrl: '/',
+      previewUrl: '/podglad/strona',
       schema: {
         links: fields.array(
           fields.object({
@@ -544,7 +544,7 @@ export default config({
       label: 'Stopka',
       path: 'content/settings/footer',
       format: { data: 'json' },
-      previewUrl: '/',
+      previewUrl: '/podglad/strona',
       schema: {
         about: fields.text({ label: 'Opis pod logo', multiline: true, defaultValue: 'Liternictwo nagrobne, dopiski i renowacja nagrobków — Tychy i okolice.' }),
         servicesHeading: fields.text({ label: 'Nagłówek kolumny usług', defaultValue: 'Usługi' }),

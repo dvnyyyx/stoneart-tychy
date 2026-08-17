@@ -19,7 +19,15 @@ const CSP_REPORT_ONLY = [
 const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
-    remotePatterns: [],
+    // Wyłącznie na potrzeby trybu podglądu (/podglad): zdjęcia wgrane w CMS
+    // czytamy prosto z repo, zanim Vercel przebuduje stronę.
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        pathname: '/dvnyyyx/stoneart-tychy/**',
+      },
+    ],
   },
   // W Next 14 ten klucz należy do `experimental` (na top-level trafił dopiero w Next 15).
   experimental: {

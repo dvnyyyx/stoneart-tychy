@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getHeroContent, getSiteSettings, resolveImage } from '@/lib/content'
+import { contentApi, type ContentApi } from '@/lib/content'
 import { telHref } from '@/lib/utils'
 import { SectionLabel } from '@/components/shared/SectionLabel'
 
-export async function Hero() {
-  const [hero, site] = await Promise.all([getHeroContent(), getSiteSettings()])
-  const heroImageSrc = resolveImage(hero.heroImage)
+export async function Hero({ api = contentApi }: { api?: ContentApi } = {}) {
+  const [hero, site] = await Promise.all([api.getHeroContent(), api.getSiteSettings()])
+  const heroImageSrc = api.image(hero.heroImage)
 
   return (
     <section
