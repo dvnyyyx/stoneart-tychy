@@ -251,38 +251,32 @@ export interface GalleryPhoto {
   /** nazwa kategorii do wyświetlenia */
   categoryName: string
   featured: boolean
-  order: number
 }
 
+// Kolejność zdjęć = kolejność w tablicy z CMS (przeciąganie w panelu).
+// Nie ma pola „order”: dwa zdjęcia nie mogą już zająć tej samej pozycji,
+// a wstawienie zdjęcia na początek przesuwa pozostałe automatycznie.
 export async function getGallery(): Promise<GalleryPhoto[]> {
   try {
-    const [slugs, categories] = await Promise.all([
-      reader.collections.gallery.list(),
+    const [data, categories] = await Promise.all([
+      reader.singletons.gallery.read(),
       getCategories(),
     ])
     const categoryNames = new Map(categories.map((c) => [c.slug, c.name]))
 
-    const items = await Promise.all(
-      slugs.map(async (slug): Promise<GalleryPhoto | null> => {
-        const data = await reader.collections.gallery.read(slug)
-        if (!data) return null
-        const src = resolveImage(data.image)
-        // Wpis bez zdjęcia zepsułby <Image src="">, więc go pomijamy.
-        if (!src) return null
-        const category = data.category ?? ''
-        return {
-          src,
-          alt: data.alt,
-          category,
-          categoryName: categoryNames.get(category) ?? category,
-          featured: Boolean(data.featured),
-          order: data.order ?? 99,
-        }
-      })
-    )
-    return items
-      .filter((p): p is GalleryPhoto => p !== null)
-      .sort((a, b) => a.order - b.order || a.alt.localeCompare(b.alt, 'pl'))
+    return (data?.photos ?? []).flatMap((photo) => {
+      const src = resolveImage(photo.image)
+      // Wpis bez zdjęcia zepsułby <Image src="">, więc go pomijamy.
+      if (!src) return []
+      const category = photo.category ?? ''
+      return [{
+        src,
+        alt: photo.alt,
+        category,
+        categoryName: categoryNames.get(category) ?? category,
+        featured: Boolean(photo.featured),
+      }]
+    })
   } catch (err) {
     console.error('[content] błąd odczytu galerii:', err)
     return []

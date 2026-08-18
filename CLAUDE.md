@@ -49,12 +49,16 @@ Other routes:
 
 All CMS content lives in `content/` as JSON files, managed via **Keystatic** with GitHub storage. The Keystatic config is in `keystatic.config.tsx` and defines:
 
-- **Collections**: `services`, `testimonials`, `gallery`, `categories` (`content/<name>/*.json`)
-- **Singletons**: `hero`, `homepage`, `oNas`, `uslugiPage`, `realizacjePage`, `opiniePage`, `kontaktPage`, `wycenaPage`, `privacyPage`, `quoteForm`, `navigation`, `footer`, `siteSettings` — all under `content/settings/`
+- **Collections**: `services`, `testimonials`, `categories` (`content/<name>/*.json`)
+- **Singletons**: `gallery`, `hero`, `homepage`, `oNas`, `uslugiPage`, `realizacjePage`, `opiniePage`, `kontaktPage`, `wycenaPage`, `privacyPage`, `quoteForm`, `navigation`, `footer`, `siteSettings` — all under `content/settings/`
 
 Every visible string, link, label and image on the site comes from one of these. Nothing user-facing is hardcoded in components any more.
 
-**The gallery is a collection, not a singleton array.** It used to be `galleryData` — a single JSON holding every photo — so adding one photo rewrote the whole list and could clobber entries written concurrently. One file per photo removes that class of conflict. Gallery `category` is a `fields.relationship` pointing at the `categories` collection, so the client adds filter categories in the CMS without a code change.
+**The gallery is a drag-and-drop array in the `gallery` singleton** (`content/settings/gallery.json`), and **position in that array is the only ordering** — there is no `order` field. This was deliberately reverted from a per-file collection: with a numeric `order`, two photos could hold the same number and dragging a photo "to position 1" left the previous first photo also at 1, so nothing shifted. Array position makes duplicates impossible and gives insert-and-shift semantics for free, which is what the client actually needs.
+
+The trade-off accepted here: every save rewrites the whole `gallery.json`. That is safe for this site because there is exactly one editor. If a second editor is ever added, revisit this — concurrent saves would clobber each other.
+
+Gallery `category` is a `fields.relationship` pointing at the `categories` collection, so the client adds filter categories in the CMS without a code change.
 
 ### Content defaults
 
@@ -62,7 +66,7 @@ Every visible string, link, label and image on the site comes from one of these.
 
 This is deliberate: fallbacks used to be inlined per page, which meant an empty CMS read rendered a plausible-looking page and hid the failure. Now a failed read is logged once, in one place (`[content] …` in build output).
 
-Collection getters (`getServices`, `getTestimonials`, `getGallery`, `getCategories`) return typed, sorted arrays and `[]` on failure. `getGallery()` drops entries with no image so `<Image src="">` can never be rendered.
+Collection getters (`getServices`, `getTestimonials`, `getCategories`) return typed, sorted arrays and `[]` on failure. `getGallery()` reads the singleton and preserves array order verbatim — do not sort it. It drops entries with no image so `<Image src="">` can never be rendered.
 
 `next.config.mjs` sets `outputFileTracingIncludes: { '/*': ['./content/**/*'] }` so Vercel's file-tracing bundles the `content/` JSON files into the serverless deployment — without this, the Keystatic reader would find no files at runtime.
 

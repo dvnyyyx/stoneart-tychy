@@ -87,43 +87,6 @@ export default config({
       },
     }),
 
-    // ───────────────────────────────────────────────────────────────
-    // Galeria jako kolekcja: jedno zdjęcie = jeden plik.
-    // Dzięki temu dodanie zdjęcia nie przepisuje całej listy i nie
-    // kasuje wpisów dodanych równolegle (to psuło galerię wcześniej).
-    // ───────────────────────────────────────────────────────────────
-    gallery: collection({
-      label: 'Zdjęcia realizacji',
-      slugField: 'alt',
-      path: 'content/gallery/*',
-      format: { data: 'json' },
-      previewUrl: '/realizacje',
-      columns: ['alt', 'order'],
-      schema: {
-        alt: fields.slug({
-          name: {
-            label: 'Opis zdjęcia (alt)',
-            description: 'Krótko, co widać na zdjęciu — Google czyta to jako opis obrazka.',
-            validation: { isRequired: true },
-          },
-        }),
-        image: imageField('Zdjęcie', 'Zalecane: JPG, min. 1200 px szerokości.', true),
-        category: fields.relationship({
-          label: 'Kategoria',
-          description: 'Wybierz z listy. Nowe kategorie dodasz w zakładce „Kategorie galerii”.',
-          collection: 'categories',
-        }),
-        featured: fields.checkbox({
-          label: 'Pokaż na stronie głównej',
-          defaultValue: false,
-        }),
-        order: fields.integer({
-          label: 'Kolejność (1 = pierwsze)',
-          defaultValue: 1,
-        }),
-      },
-    }),
-
     testimonials: collection({
       label: 'Opinie klientów',
       slugField: 'author',
@@ -222,6 +185,46 @@ export default config({
     // ───────────────────────────────────────────────────────────────
     // STRONA GŁÓWNA
     // ───────────────────────────────────────────────────────────────
+    // ───────────────────────────────────────────────────────────────
+    // Galeria: jedna lista z przeciąganiem. Kolejność zdjęć na stronie
+    // to kolejność w tej liście — przeciągnięcie na górę przesuwa resztę
+    // o jedno pole. Wcześniej była tu kolekcja z ręcznym numerem „order”,
+    // przez co dwa zdjęcia mogły mieć tę samą pozycję i nic się nie
+    // przesuwało. Numerów nie ma już wcale.
+    // ───────────────────────────────────────────────────────────────
+    gallery: singleton({
+      label: 'Galeria realizacji',
+      path: 'content/settings/gallery',
+      format: { data: 'json' },
+      previewUrl: '/realizacje',
+      schema: {
+        photos: fields.array(
+          fields.object({
+            image: imageField('Zdjęcie', 'Zalecane: JPG, min. 1200 px szerokości.', true),
+            alt: fields.text({
+              label: 'Opis zdjęcia (alt)',
+              description: 'Krótko, co widać na zdjęciu — Google czyta to jako opis obrazka.',
+              validation: { isRequired: true },
+            }),
+            category: fields.relationship({
+              label: 'Kategoria',
+              description: 'Wybierz z listy. Nowe kategorie dodasz w zakładce „Kategorie galerii”.',
+              collection: 'categories',
+            }),
+            featured: fields.checkbox({
+              label: 'Pokaż na stronie głównej',
+              defaultValue: false,
+            }),
+          }),
+          {
+            label: 'Zdjęcia — przeciągnij, żeby zmienić kolejność',
+            description: 'Pierwsze zdjęcie na liście jest pierwsze na stronie.',
+            itemLabel: (props) => props.fields.alt.value || 'Zdjęcie bez opisu',
+          }
+        ),
+      },
+    }),
+
     hero: singleton({
       label: 'Strona główna — Hero (nagłówek)',
       path: 'content/settings/hero',

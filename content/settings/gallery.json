@@ -1,0 +1,46 @@
+{
+  "photos": [
+    {
+      "image": "/images/prace/d-opis-i-odnowa-liter/image.jpg",
+      "alt": "Dopis i odnowa liter",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
+      "image": "/images/prace/realizacja-napisu-na-gotowym-nagrobku.jpg",
+      "alt": "Realizacja napisu na gotowym nagrobku",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
+      "image": "/images/prace/gotowy-projekt-literniczy-na-nagrobku.jpg",
+      "alt": "Gotowy projekt literniczy na nagrobku",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
+      "image": "/images/prace/kamieniarstwo-realizacja-na-nagrobku.jpg",
+      "alt": "Kamieniarstwo — realizacja napisu na nagrobku",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
+      "image": "/images/prace/realizacja-doboru-czcionki-na-nagrobku.jpg",
+      "alt": "Realizacja doboru czcionki na nagrobku",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
+      "image": "/images/prace/realizacja-napisu-na-bialym-nagrobku.jpg",
+      "alt": "Realizacja napisu na białym nagrobku",
+      "category": "liternictwo",
+      "featured": true
+    },
+    {
+      "image": "/images/prace/realizacja-tabliczki-imiennej.jpg",
+      "alt": "Realizacja tabliczki imiennej",
+      "category": "liternictwo",
+      "featured": true
+    }
+  ]
+}
